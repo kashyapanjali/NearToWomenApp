@@ -97,7 +97,7 @@ export default function App() {
               isWeb={isWeb}
             />
 
-            <Text style={styles.sectionTitle}>Featured Products</Text>
+            {/* <Text style={styles.sectionTitle}>Featured Products</Text> */}
             <ProductList
               products={
                 activeCategory === "all" ? products : products.filter((product) => product.category === activeCategory)

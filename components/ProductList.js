@@ -30,15 +30,13 @@ const ProductList = ({
     if (horizontal) return 1
 
     if (isWeb) {
-      if (windowWidth > 1600) return 5
-      if (windowWidth > 1300) return 4
-      if (windowWidth > 900) return 3
-      if (windowWidth > 550) return 2
-      return 1
+      // For laptop/desktop: always show 5 products per row
+      return 5
     } else {
-      return windowWidth > 600 ? 2 : 1
+      // For mobile devices: always show 2 products per row
+      return 2
     }
-  }, [windowWidth, isWeb, horizontal])
+  }, [isWeb, horizontal])
 
   // Calculate item width for web grid layout
   const getItemWidth = () => {
@@ -50,14 +48,7 @@ const ProductList = ({
       const containerPadding = 20 // Container padding
       const totalGaps = columns - 1
 
-      // Use fixed widths for larger screens
-      if (windowWidth > 1300) {
-        if (columns === 5) return 250
-        if (columns === 4) return 270
-        if (columns === 3) return 320
-      }
-
-      // For smaller screens, calculate based on available width
+      // Calculate width based on available width and number of columns (5)
       const availableWidth = windowWidth - totalGaps * gapSize - containerPadding * 2
       return Math.floor(availableWidth / columns)
     }
@@ -71,6 +62,7 @@ const ProductList = ({
         styles.productWrapper,
         horizontal ? styles.horizontalWrapper : styles.gridWrapper,
         isWeb && !horizontal && { width: getItemWidth() },
+        !isWeb && !horizontal && { width: '48%' }
       ]}
     >
       <ProductCard
@@ -135,7 +127,7 @@ const styles = StyleSheet.create({
         }),
   },
   gridContainer: {
-    padding: 20,
+    padding: Platform.OS === "web" ? 20 : 10,
   },
   horizontalContainer: {
     paddingVertical: 20,
@@ -156,8 +148,8 @@ const styles = StyleSheet.create({
           display: "flex",
           flexDirection: "row",
           flexWrap: "wrap",
-          justifyContent: "flex-start",
-          gap: 20,
+          justifyContent: "space-between",
+          gap: 15,
         }
       : {}),
   },
@@ -168,7 +160,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     ...(Platform.OS !== "web"
       ? {
-          marginHorizontal: 10,
+          marginHorizontal: 5,
         }
       : {}),
   },
@@ -178,7 +170,7 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: "space-between",
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
   },
   noProducts: {
     flex: 1,

@@ -30,26 +30,6 @@ const ProductCard = ({ product, addToCart, isWeb, windowWidth: propWindowWidth, 
 
   const cardStyles = [styles.card, horizontal ? styles.horizontalCard : styles.verticalCard, isWeb && styles.webCard]
 
-  // Determine image dimensions based on layout and screen
-  const getImageDimensions = () => {
-    if (horizontal) {
-      return {
-        width: 150,
-        height: 150,
-      }
-    }
-
-    if (isWeb) {
-      if (windowWidth > 1400) return { height: 200, width: "100%" }
-      if (windowWidth > 1100) return { height: 180, width: "100%" }
-      return { height: 160, width: "100%" }
-    }
-
-    return { height: 140, width: "100%" }
-  }
-
-  const imageDimensions = getImageDimensions()
-
   // Format price
   const formatPrice = (price) => {
     const dollars = Math.floor(price)
@@ -113,7 +93,7 @@ const ProductCard = ({ product, addToCart, isWeb, windowWidth: propWindowWidth, 
       >
         <Image
           source={{ uri: product.image || "https://via.placeholder.com/200" }}
-          style={[styles.image, imageDimensions]}
+          style={styles.image}
           resizeMode="contain"
         />
         {categoryBadge && !horizontal && (
@@ -132,19 +112,21 @@ const ProductCard = ({ product, addToCart, isWeb, windowWidth: propWindowWidth, 
       </TouchableOpacity>
 
       <View style={[styles.infoContainer, horizontal && styles.horizontalInfoContainer]}>
-        <TouchableOpacity onPress={() => setShowQuickShop(true)}>
-          <Text style={styles.name} numberOfLines={horizontal ? 2 : 2}>
-            {product.name}
-          </Text>
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity onPress={() => setShowQuickShop(true)}>
+            <Text style={styles.name} numberOfLines={2}>
+              {product.name}
+            </Text>
+          </TouchableOpacity>
 
-        {formatPrice(product.price)}
+          {formatPrice(product.price)}
 
-        {!horizontal && (
-          <Text style={styles.description} numberOfLines={2}>
-            {product.description}
-          </Text>
-        )}
+          {!horizontal && (
+            <Text style={styles.description} numberOfLines={2}>
+              {product.description}
+            </Text>
+          )}
+        </View>
 
         <View style={styles.footer}>
           {product.stock <= 10 && <Text style={styles.lowStockText}>Only {product.stock} left</Text>}
@@ -234,14 +216,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
+    height: Platform.OS === "web" ? 380 : 320,
   },
   verticalCard: {
     flex: 1,
     maxWidth: "100%",
+    width: "100%",
   },
   horizontalCard: {
     flexDirection: "row",
     width: 320,
+    height: 180,
     marginRight: 16,
     borderRadius: 12,
   },
@@ -263,14 +248,19 @@ const styles = StyleSheet.create({
     position: "relative",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
+    height: Platform.OS === "web" ? 200 : 160,
   },
   horizontalImageContainer: {
     width: 150,
+    height: 180,
     borderTopRightRadius: 0,
     borderBottomLeftRadius: 12,
   },
   image: {
     resizeMode: "contain",
+    width: "100%",
+    height: "100%",
+    maxHeight: Platform.OS === "web" ? 160 : 120,
   },
   categoryBadge: {
     position: "absolute",
@@ -315,11 +305,17 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     padding: 16,
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    height: Platform.OS === "web" ? 180 : 160,
   },
   horizontalInfoContainer: {
     flex: 1,
     borderLeftWidth: 1,
     borderLeftColor: "#f0f0f0",
+    height: 180,
   },
   name: {
     fontSize: 15,
@@ -327,6 +323,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     lineHeight: 22,
     fontWeight: "600",
+    height: 44,
+    overflow: "hidden",
   },
   priceContainer: {
     flexDirection: "row",
@@ -355,6 +353,8 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 12,
     lineHeight: 19,
+    height: 38,
+    overflow: "hidden",
   },
   footer: {
     marginTop: "auto",
