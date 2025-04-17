@@ -260,16 +260,18 @@ const styles = StyleSheet.create({
   webLogo: {
     marginRight: 20,
   },
+  
   logoText: {
     color: "white",
     fontWeight: "bold",
-    letterSpacing: 0.5,
+    letterSpacing: 0.1,
   },
   searchBarContainer: {
     flex: 1,
     maxWidth: "100%",
     paddingHorizontal: 10,
     alignItems: "center",
+    marginRight:15
   },
   webSearchBarContainer: {
     maxWidth: "60%",
@@ -324,9 +326,11 @@ const styles = StyleSheet.create({
   },
   searchButton: {
     backgroundColor: "#e6799f",
-    width: 50,
+    width: 35,
     justifyContent: "center",
     alignItems: "center",
+    borderTopRightRadius: 6,
+    borderBottomRightRadius: 6,
   },
   headerLeftSection: {
     flexDirection: "row",
@@ -360,7 +364,7 @@ const styles = StyleSheet.create({
     position: "relative",
     backgroundColor: "rgba(255,255,255,0.1)",
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     borderRadius: 8,
   },
   cartIconContainer: {
