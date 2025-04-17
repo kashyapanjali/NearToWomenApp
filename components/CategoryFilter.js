@@ -81,8 +81,8 @@ const getCategoryIcon = (categoryId) => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 20,
+    borderRadius: 16,
     padding: 20,
-    elevation: 3,
   },
   header: {
     alignItems: "center",
@@ -100,15 +100,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fdf2f7",
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
   },
   filterText: {
     color: "#a8336e",
@@ -129,7 +123,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   category: {
-    backgroundColor: "#fdf2f7",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 25,
@@ -137,31 +130,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minWidth: 120,
     marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    borderWidth: 1,
+    borderColor: "#a8336e",
   },
   webCategory: {
     justifyContent: "center",
     transition: "all 0.2s ease",
-    ...(Platform.OS === "web"
-      ? {
-          ":hover": {
-            transform: "translateY(-2px)",
-            boxShadow: "0 4px 8px rgba(0,0,0,0.05)",
-          },
-        }
-      : {}),
   },
   activeCategory: {
     backgroundColor: "#a8336e",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 2,
   },
   categoryIcon: {
     marginRight: 8,
