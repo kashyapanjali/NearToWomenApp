@@ -1,6 +1,5 @@
 "use client"
 
-// components/CategoryFilter.js
 import { useState } from "react"
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Platform } from "react-native"
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -19,6 +18,7 @@ const CategoryFilter = ({ categories, activeCategory, setActiveCategory, isWeb }
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Women's Products</Text>
+
         {!isWeb && (
           <TouchableOpacity style={styles.filterButton} onPress={() => setShowFilter(!showFilter)}>
             <Text style={styles.filterText}>{showFilter ? "Hide Categories" : "Show Categories"}</Text>
@@ -31,7 +31,10 @@ const CategoryFilter = ({ categories, activeCategory, setActiveCategory, isWeb }
         <ScrollView
           horizontal={!isWeb}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.categoriesContainer, isWeb && styles.webCategoriesContainer]}
+          contentContainerStyle={[
+            styles.categoriesContainer,
+            isWeb ? styles.webCategoriesContainer : styles.mobileCategoriesContainer,
+          ]}
         >
           {categories.map((category) => (
             <TouchableOpacity
@@ -60,7 +63,6 @@ const CategoryFilter = ({ categories, activeCategory, setActiveCategory, isWeb }
   )
 }
 
-// Helper function to get appropriate icons for categories
 const getCategoryIcon = (categoryId) => {
   switch (categoryId) {
     case "menstrual":
@@ -79,28 +81,23 @@ const getCategoryIcon = (categoryId) => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 20,
-    backgroundColor: "white",
-    borderRadius: 16,
     padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
     elevation: 3,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "center",
     marginBottom: 18,
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#a8336e",
     letterSpacing: 0.5,
+    textAlign: "center",
   },
   filterButton: {
+    marginTop: 10,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fdf2f7",
@@ -120,24 +117,26 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   categoriesContainer: {
-    paddingBottom: 5,
+    gap: 10,
+    alignItems: "center",
+  },
+  mobileCategoriesContainer: {
+    flexDirection: "row",
   },
   webCategoriesContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "flex-start",
-    gap: 10,
+    justifyContent: "space-between",
   },
   category: {
     backgroundColor: "#fdf2f7",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 25,
-    marginRight: 12,
-    marginBottom: 10,
     flexDirection: "row",
     alignItems: "center",
-    minWidth: 100,
+    minWidth: 120,
+    marginBottom: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -145,7 +144,6 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   webCategory: {
-    minWidth: 130,
     justifyContent: "center",
     transition: "all 0.2s ease",
     ...(Platform.OS === "web"
