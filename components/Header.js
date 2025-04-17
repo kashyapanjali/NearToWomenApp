@@ -197,17 +197,6 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
                 <Text style={styles.subHeaderNavText}>Today's Deals</Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity style={styles.subHeaderNavItem}>
-              <Text style={styles.subHeaderNavText}>Wellness</Text>
-            </TouchableOpacity>
-            {windowWidth >= 900 && (
-              <TouchableOpacity style={styles.subHeaderNavItem}>
-                <Text style={styles.subHeaderNavText}>Health Products</Text>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity style={styles.subHeaderNavItem}>
-              <Text style={styles.subHeaderNavText}>Safety</Text>
-            </TouchableOpacity>
             {windowWidth >= 1050 && (
               <TouchableOpacity style={styles.subHeaderNavItem}>
                 <Text style={styles.subHeaderNavText}>Customer Service</Text>
@@ -408,6 +397,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 20,
+    marginLeft:20
   },
   subHeaderIcon: {
     marginRight: 6,
@@ -419,6 +409,7 @@ const styles = StyleSheet.create({
   },
   subHeaderNav: {
     flexDirection: "row",
+    marginRight:20
   },
   subHeaderNavItem: {
     marginLeft: 20,
