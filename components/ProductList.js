@@ -47,13 +47,14 @@ const ProductList = ({
 
     if (isWeb) {
       const columns = getNumColumns
-      const gapSize = 24
-      const containerPadding = 24
+      const gapSize = 40 // Gap between cards
+      const containerPadding = 40 // Container padding
       const totalGaps = columns - 1
-      const maxContainerWidth = 1400 // Maximum container width
+      const maxContainerWidth = 1400
       const actualContainerWidth = Math.min(windowWidth - (containerPadding * 2), maxContainerWidth)
       const availableWidth = actualContainerWidth - (totalGaps * gapSize)
-      return Math.floor(availableWidth / columns)
+      const itemWidth = Math.floor(availableWidth / columns)
+      return itemWidth - 10 // Subtract additional padding to ensure gap
     }
 
     return undefined
@@ -65,7 +66,7 @@ const ProductList = ({
         styles.productWrapper,
         horizontal ? styles.horizontalWrapper : styles.gridWrapper,
         isWeb && !horizontal && { width: getItemWidth() },
-        !isWeb && !horizontal && { width: '48%' }
+        !isWeb && !horizontal && { width: '45%' } // Reduced from 48% to ensure gap
       ]}
     >
       <ProductCard
@@ -229,29 +230,33 @@ const styles = StyleSheet.create({
           display: "flex",
           flexDirection: "row",
           flexWrap: "wrap",
-          justifyContent: "center",
-          gap: 24,
+          justifyContent: "space-evenly",
+          gap: 40,
+          rowGap: 40,
+          padding: 20,
         }
       : {}),
   },
   productWrapper: {
-    margin: 0,
+    margin: 8,
   },
   gridWrapper: {
-    marginBottom: 24,
+    marginBottom: 40,
     ...(Platform.OS !== "web"
       ? {
-          marginHorizontal: 12,
+          marginHorizontal: 10,
         }
       : {}),
   },
   horizontalWrapper: {
-    marginRight: 24,
+    marginRight: 40,
     width: 320,
   },
   columnWrapper: {
-    justifyContent: "center",
-    paddingHorizontal: 12,
+    justifyContent: "space-evenly",
+    gap: 20,
+    paddingHorizontal: 10,
+    width: "100%",
   },
 })
 

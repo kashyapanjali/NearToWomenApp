@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 16,
     padding: 20,
+    
   },
   header: {
     alignItems: "center",

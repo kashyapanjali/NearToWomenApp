@@ -112,7 +112,7 @@ const ProductCard = ({ product, addToCart, isWeb, windowWidth: propWindowWidth, 
       </TouchableOpacity>
 
       <View style={[styles.infoContainer, horizontal && styles.horizontalInfoContainer]}>
-        <View>
+        <View style={styles.contentContainer}>
           <TouchableOpacity onPress={() => setShowQuickShop(true)}>
             <Text style={styles.name} numberOfLines={2}>
               {product.name}
@@ -131,15 +131,27 @@ const ProductCard = ({ product, addToCart, isWeb, windowWidth: propWindowWidth, 
         <View style={styles.footer}>
           {product.stock <= 10 && <Text style={styles.lowStockText}>Only {product.stock} left</Text>}
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.quickViewButton} onPress={() => setShowQuickShop(true)}>
-              <Icon name="eye" size={14} color="white" />
-            </TouchableOpacity>
+          {isWeb ? (
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.quickViewButton} onPress={() => setShowQuickShop(true)}>
+                <Icon name="eye" size={14} color="white" />
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.addButton} onPress={() => addToCart(product)}>
-              <Text style={styles.addButtonText}>Add to Cart</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity style={styles.addButton} onPress={() => addToCart(product)}>
+                <Text style={styles.addButtonText}>Add to Cart</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.mobileButtonContainer}>
+              <TouchableOpacity style={styles.mobileQuickViewButton} onPress={() => setShowQuickShop(true)}>
+                <Icon name="search" size={18} color="#fff" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.mobileAddButton} onPress={() => addToCart(product)}>
+                <Icon name="shopping-cart" size={18} color="#fff" style={styles.cartIcon} />
+                <Text style={styles.mobileAddButtonText}>Add to Cart</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
 
@@ -216,7 +228,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
-    height: Platform.OS === "web" ? 420 : 380,
+    height: Platform.OS === "web" ? 420 : 340,
     width: "100%",
     maxWidth: "100%",
   },
@@ -241,14 +253,14 @@ const styles = StyleSheet.create({
     }),
   },
   imageContainer: {
-    padding: 20,
+    padding: Platform.OS === "web" ? 20 : 12,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
     position: "relative",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-    height: Platform.OS === "web" ? 220 : 180,
+    height: Platform.OS === "web" ? 220 : 160,
   },
   horizontalImageContainer: {
     width: 150,
@@ -304,12 +316,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   infoContainer: {
-    padding: 20,
+    padding: Platform.OS === "web" ? 20 : 12,
     flex: 1,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    height: Platform.OS === "web" ? 200 : 180,
+    height: Platform.OS === "web" ? 200 : 160,
   },
   horizontalInfoContainer: {
     flex: 1,
@@ -318,56 +330,59 @@ const styles = StyleSheet.create({
     height: 180,
   },
   name: {
-    fontSize: 15,
+    fontSize: Platform.OS === "web" ? 15 : 13,
     color: "#c04d7c",
     marginBottom: 8,
-    lineHeight: 22,
+    lineHeight: Platform.OS === "web" ? 22 : 18,
     fontWeight: "600",
-    height: 44,
+    height: Platform.OS === "web" ? 44 : 36,
     overflow: "hidden",
   },
   priceContainer: {
     flexDirection: "row",
     alignItems: "flex-start",
-    marginBottom: 10,
+    marginBottom: Platform.OS === "web" ? 10 : 6,
   },
   priceCurrency: {
-    fontSize: 13,
+    fontSize: Platform.OS === "web" ? 13 : 11,
     fontWeight: "normal",
     color: "#e84a80",
     marginTop: 2,
   },
   priceWhole: {
-    fontSize: 18,
+    fontSize: Platform.OS === "web" ? 18 : 16,
     fontWeight: "700",
     color: "#e84a80",
   },
   priceCents: {
-    fontSize: 12,
+    fontSize: Platform.OS === "web" ? 12 : 10,
     fontWeight: "normal",
     color: "#e84a80",
     marginTop: 2,
   },
   description: {
-    fontSize: 13,
+    fontSize: Platform.OS === "web" ? 13 : 11,
     color: "#666",
-    marginBottom: 12,
-    lineHeight: 19,
-    height: 38,
+    marginBottom: Platform.OS === "web" ? 12 : 8,
+    lineHeight: Platform.OS === "web" ? 19 : 16,
+    height: Platform.OS === "web" ? 38 : 32,
     overflow: "hidden",
   },
   footer: {
+    width: "100%",
+    paddingTop: Platform.OS === "web" ? 8 : 12,
     marginTop: "auto",
   },
   lowStockText: {
     color: "#e84a80",
-    fontSize: 12,
-    marginBottom: 10,
+    fontSize: Platform.OS === "web" ? 12 : 10,
+    marginBottom: Platform.OS === "web" ? 10 : 6,
     fontWeight: "500",
   },
   buttonContainer: {
     flexDirection: "row",
     alignItems: "center",
+    gap: Platform.OS === "web" ? 10 : 6,
   },
   quickViewButton: {
     backgroundColor: "#c04d7c",
@@ -403,6 +418,50 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     letterSpacing: 0.5,
+  },
+  mobileButtonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: Platform.OS === "web" ? 0 : 4,
+  },
+  mobileQuickViewButton: {
+    backgroundColor: "#c04d7c",
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  mobileAddButton: {
+    backgroundColor: "#e6799f",
+    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    flex: 1,
+    height: 44,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  mobileAddButtonText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  cartIcon: {
+    marginRight: 10,
   },
 
   // Quick Shop Modal Styles
@@ -549,6 +608,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     letterSpacing: 0.5,
+  },
+  contentContainer: {
+    flex: 1,
   },
 })
 
