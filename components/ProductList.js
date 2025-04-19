@@ -171,9 +171,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    borderRadius: 16,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
     overflow: "hidden",
-    marginBottom: 30,
+    marginBottom: 0,
     marginHorizontal: 'auto',
     maxWidth: 1400,
     width: '100%',
@@ -190,7 +193,6 @@ const styles = StyleSheet.create({
         }),
   },
   sectionContainer: {
-    marginBottom: 30,
     padding: Platform.OS === "web" ? 20 : 10,
   },
   sectionHeader: {

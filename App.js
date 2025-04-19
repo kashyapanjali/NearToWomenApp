@@ -84,10 +84,7 @@ export default function App() {
       <View style={styles.appContent}>
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={[
-            styles.scrollViewContent, 
-            { paddingBottom: isWeb ? 350 : 60 }
-          ]}
+          contentContainerStyle={styles.scrollViewContent}
           showsVerticalScrollIndicator={false}
         >
           <Banner isWeb={isWeb} />
@@ -179,12 +176,13 @@ const styles = StyleSheet.create({
   appContent: {
     flex: 1,
     position: "relative",
+    backgroundColor: "white",
   },
   scrollView: {
     flex: 1,
   },
   scrollViewContent: {
-    paddingBottom: Platform.OS === "web" ? 100 : 60,
+    flexGrow: 1,
   },
   mainContent: {
     flex: 1,
@@ -192,7 +190,6 @@ const styles = StyleSheet.create({
     maxWidth: 1400,
     alignSelf: "center",
     width: "100%",
-    marginBottom: Platform.OS === "web" ? 0 : 10,
   },
   sectionDivider: {
     height: 1,
@@ -209,5 +206,4 @@ const styles = StyleSheet.create({
     color: "#a8336e",
     letterSpacing: 0.5,
   },
-
 })
