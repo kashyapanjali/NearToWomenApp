@@ -34,12 +34,6 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
 
   // Dynamic breakpoint-based styling
   const getResponsiveStyles = () => {
-    // Extra small: 0-479px (mobile)
-    // Small: 480-767px (large mobile/small tablet)
-    // Medium: 768-991px (tablet)
-    // Large: 992-1199px (small desktop)
-    // Extra large: 1200px+ (large desktop)
-    
     if (windowWidth < 480) {
       return {
         logoFontSize: 18,
@@ -93,15 +87,8 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
           </View>
 
           {/* Center Section: Search */}
-          <View style={[
-            styles.searchBarContainer,
-            isWeb && styles.webSearchBarContainer
-          ]}>
-            <View style={[
-              styles.searchBar, 
-              isWeb && styles.webSearchBar, 
-              isFocused && styles.searchBarFocused,
-            ]}>
+          <View style={[styles.searchBarContainer, isWeb && styles.webSearchBarContainer]}>
+            <View style={[styles.searchBar, isWeb && styles.webSearchBar, isFocused && styles.searchBarFocused]}>
               {(!isMobile || windowWidth > 400) && (
                 <TouchableOpacity style={styles.categoryDropdown}>
                   <Text style={styles.categoryDropdownText}>All</Text>
@@ -127,28 +114,29 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
 
           {/* Right Section: Nav Items and Cart */}
           <View style={styles.headerRightSection}>
-
-            {/* Sign In Section */}
-            <TouchableOpacity 
-              style={[
-                styles.navItem,
-                isWeb && styles.webNavItem,
-                isWeb && {
-                  ':hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: 8,
+            {/* Sign In Section - Only show on larger screens */}
+            {!isMobile && (
+              <TouchableOpacity 
+                style={[
+                  styles.navItem,
+                  isWeb && styles.webNavItem,
+                  isWeb && {
+                    ':hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: 8,
+                    }
                   }
-                }
-              ]}
-            >
-              <View style={styles.signInContainer}>
-                <Text style={styles.navItemTopSignInText}>Hello! Women</Text>
-                <View style={styles.signInRow}>
-                  <Text style={styles.navItemBottomSignInText}>Sign In</Text>
-                  <Icon name="user" size={14} color="white" style={styles.signInIcon} />
+                ]}
+              >
+                <View style={styles.signInContainer}>
+                  <Text style={styles.navItemTopSignInText}>Hello! Women</Text>
+                  <View style={styles.signInRow}>
+                    <Text style={styles.navItemBottomSignInText}>Sign In</Text>
+                    <Icon name="user" size={14} color="white" style={styles.signInIcon} />
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
+              </TouchableOpacity>
+            )}
 
             {isWeb && windowWidth >= 768 && (
               <TouchableOpacity style={styles.navItem}>
@@ -177,7 +165,7 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
         <View style={styles.mobileMenu}>
           <TouchableOpacity style={styles.mobileMenuItem}>
             <Icon name="user" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
-            <Text style={styles.mobileMenuText}>Account</Text>
+            <Text style={styles.mobileMenuText}>Sign In</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.mobileMenuItem}>
             <Icon name="heart" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
@@ -272,7 +260,6 @@ const styles = StyleSheet.create({
   webLogo: {
     marginRight: 20,
   },
-  
   logoText: {
     color: "white",
     fontWeight: "bold",
@@ -283,7 +270,7 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     paddingHorizontal: 10,
     alignItems: "center",
-    marginRight:15
+    marginRight: 15,
   },
   webSearchBarContainer: {
     maxWidth: "60%",
@@ -445,7 +432,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 20,
-    marginLeft:20
+    marginLeft: 20,
   },
   subHeaderIcon: {
     marginRight: 6,
@@ -457,7 +444,7 @@ const styles = StyleSheet.create({
   },
   subHeaderNav: {
     flexDirection: "row",
-    marginRight:20
+    marginRight: 20,
   },
   subHeaderNavItem: {
     marginLeft: 20,
