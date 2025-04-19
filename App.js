@@ -5,7 +5,7 @@ import { StatusBar, SafeAreaView, StyleSheet, View, Dimensions, Platform, Scroll
 import Header from "./components/Header"
 import Banner from "./components/Banner"
 import ProductList from "./components/ProductList"
-// import Footer from "./components/Footer"
+import Footer from "./components/Footer"
 import Cart from "./components/Cart"
 import { products } from "./data/product"
 import CategoryFilter from "./components/CategoryFilter"
@@ -84,7 +84,10 @@ export default function App() {
       <View style={styles.appContent}>
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={[styles.scrollViewContent, { paddingBottom: isWeb ? 0 : 120 }]}
+          contentContainerStyle={[
+            styles.scrollViewContent, 
+            { paddingBottom: isWeb ? 350 : 60 }
+          ]}
           showsVerticalScrollIndicator={false}
         >
           <Banner isWeb={isWeb} />
@@ -152,7 +155,7 @@ export default function App() {
           </View>
         </ScrollView>
 
- 
+        <Footer isWeb={isWeb} />
       </View>
 
       {showCart && (
@@ -181,7 +184,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollViewContent: {
-    paddingBottom: Platform.OS === "web" ? 350 : 200,
+    paddingBottom: Platform.OS === "web" ? 100 : 60,
   },
   mainContent: {
     flex: 1,
@@ -189,6 +192,7 @@ const styles = StyleSheet.create({
     maxWidth: 1400,
     alignSelf: "center",
     width: "100%",
+    marginBottom: Platform.OS === "web" ? 0 : 10,
   },
   sectionDivider: {
     height: 1,
