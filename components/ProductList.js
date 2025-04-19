@@ -222,6 +222,7 @@ const styles = StyleSheet.create({
   },
   gridList: {
     paddingBottom: Platform.OS === "web" ? 24 : 12,
+    flexGrow: 1,
   },
   horizontalList: {
     paddingRight: 24,
@@ -233,6 +234,7 @@ const styles = StyleSheet.create({
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "space-evenly",
+          alignItems: "stretch",
           gap: 40,
           rowGap: 40,
           padding: 20,
@@ -241,6 +243,7 @@ const styles = StyleSheet.create({
   },
   productWrapper: {
     margin: Platform.OS === "web" ? 8 : 4,
+    flex: 1,
   },
   gridWrapper: {
     marginBottom: Platform.OS === "web" ? 40 : 16,
@@ -248,18 +251,21 @@ const styles = StyleSheet.create({
       ? {
           marginHorizontal: 4,
           width: '48%',
+          flex: 0,
         }
       : {}),
   },
   horizontalWrapper: {
     marginRight: 40,
     width: 320,
+    flex: 0,
   },
   columnWrapper: {
     justifyContent: "center",
     gap: Platform.OS === "web" ? 20 : 8,
     paddingHorizontal: Platform.OS === "web" ? 10 : 6,
     width: "100%",
+    alignItems: "stretch",
   },
 })
 

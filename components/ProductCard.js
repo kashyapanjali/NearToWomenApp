@@ -235,7 +235,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
-    height: Platform.OS === "web" ? 420 : 320,
+    height: "auto",
+    minHeight: Platform.OS === "web" ? 420 : 320,
     width: "100%",
     maxWidth: "100%",
   },
@@ -268,6 +269,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     height: Platform.OS === "web" ? 220 : 140,
+    minHeight: Platform.OS === "web" ? 220 : 140,
   },
   horizontalImageContainer: {
     width: 150,
@@ -280,6 +282,7 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "contain",
     maxHeight: "100%",
+    aspectRatio: 1,
   },
   categoryBadge: {
     position: "absolute",
@@ -328,7 +331,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    height: Platform.OS === "web" ? 200 : 180,
+    minHeight: Platform.OS === "web" ? 200 : 180,
   },
   horizontalInfoContainer: {
     flex: 1,
@@ -346,14 +349,14 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     lineHeight: Platform.OS === "web" ? 22 : 18,
     fontWeight: "600",
-    height: Platform.OS === "web" ? 44 : 36,
+    minHeight: Platform.OS === "web" ? 44 : 36,
   },
   description: {
     fontSize: Platform.OS === "web" ? 13 : 11,
     color: "#666",
     marginBottom: Platform.OS === "web" ? 12 : 6,
     lineHeight: Platform.OS === "web" ? 19 : 16,
-    height: Platform.OS === "web" ? 38 : 32,
+    minHeight: Platform.OS === "web" ? 38 : 32,
   },
   footer: {
     width: "100%",
