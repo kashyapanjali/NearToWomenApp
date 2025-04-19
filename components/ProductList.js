@@ -2,8 +2,9 @@
 
 // components/ProductList.js
 import { useMemo } from "react"
-import { View, Text, FlatList, StyleSheet, Platform } from "react-native"
+import { View, Text, FlatList, StyleSheet, Platform, ScrollView } from "react-native"
 import ProductCard from "./ProductCard"
+import Icon from "react-native-vector-icons/FontAwesome"
 
 const ProductList = ({
   products,
@@ -16,26 +17,28 @@ const ProductList = ({
   windowWidth,
   horizontal = false,
 }) => {
+  // Filter products based on search term
   const filteredProducts = products.filter((product) => {
-    const matchesCategory = activeCategory === "all" || product.category === activeCategory
     const matchesSearch =
       searchTerm === "" ||
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesCategory && matchesSearch
+    return matchesSearch
   })
+
+  // Group products by category
+  const productsByCategory = useMemo(() => {
+    const grouped = {}
+    categories.forEach(category => {
+      grouped[category.id] = filteredProducts.filter(product => product.category === category.id)
+    })
+    return grouped
+  }, [filteredProducts, categories])
 
   // Calculate number of columns based on screen width and platform
   const getNumColumns = useMemo(() => {
     if (horizontal) return 1
-
-    if (isWeb) {
-      // For laptop/desktop: always show 5 products per row
-      return 5
-    } else {
-      // For mobile devices: always show 2 products per row
-      return 2
-    }
+    return isWeb ? 5 : 2
   }, [isWeb, horizontal])
 
   // Calculate item width for web grid layout
@@ -44,12 +47,12 @@ const ProductList = ({
 
     if (isWeb) {
       const columns = getNumColumns
-      const gapSize = 16 // Total gap size
-      const containerPadding = 20 // Container padding
+      const gapSize = 24
+      const containerPadding = 24
       const totalGaps = columns - 1
-
-      // Calculate width based on available width and number of columns (5)
-      const availableWidth = windowWidth - totalGaps * gapSize - containerPadding * 2
+      const maxContainerWidth = 1400 // Maximum container width
+      const actualContainerWidth = Math.min(windowWidth - (containerPadding * 2), maxContainerWidth)
+      const availableWidth = actualContainerWidth - (totalGaps * gapSize)
       return Math.floor(availableWidth / columns)
     }
 
@@ -75,35 +78,91 @@ const ProductList = ({
     </View>
   )
 
-  return (
-    <View style={[styles.container, horizontal ? styles.horizontalContainer : styles.gridContainer]}>
-      {filteredProducts.length === 0 ? (
-        <View style={styles.noProducts}>
-          <View style={styles.noProductsIcon}>
-            <Text style={styles.noProductsEmoji}>🔍</Text>
-          </View>
-          <Text style={styles.noProductsText}>No products found</Text>
-          <Text style={styles.noProductsSubtext}>Try a different search or category</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={filteredProducts}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={horizontal ? 1 : getNumColumns}
-          key={horizontal ? "horizontal" : `grid-${getNumColumns}`}
-          horizontal={horizontal}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={[
-            styles.productList,
-            horizontal ? styles.horizontalList : styles.gridList,
-            isWeb && !horizontal && styles.webGrid,
-          ]}
-          columnWrapperStyle={!horizontal && getNumColumns > 1 && !isWeb ? styles.columnWrapper : null}
-        />
-      )}
+  const renderProductSection = (title, products) => (
+    <View style={styles.sectionContainer}>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        <View style={styles.sectionDivider} />
+      </View>
+      <FlatList
+        data={products}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={horizontal ? 1 : getNumColumns}
+        key={horizontal ? "horizontal" : `grid-${getNumColumns}`}
+        horizontal={horizontal}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.productList,
+          horizontal ? styles.horizontalList : styles.gridList,
+          isWeb && !horizontal && styles.webGrid,
+        ]}
+        columnWrapperStyle={!horizontal && getNumColumns > 1 && !isWeb ? styles.columnWrapper : null}
+      />
     </View>
+  )
+
+  const getCategoryIcon = (categoryId) => {
+    switch (categoryId) {
+      case "menstrual":
+        return "tint"
+      case "safety":
+        return "shield"
+      case "wellness":
+        return "heart"
+      case "food":
+        return "apple"
+      default:
+        return "th-large"
+    }
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      {/* All Products Section */}
+      {renderProductSection("All Products", filteredProducts)}
+
+      {/* Category-wise Sections */}
+      {categories.map(category => {
+        const categoryProducts = productsByCategory[category.id]
+        if (categoryProducts.length > 0) {
+          return (
+            <View key={category.id} style={styles.sectionContainer}>
+              <View style={styles.sectionHeader}>
+                <View style={styles.categoryHeader}>
+                  <Icon 
+                    name={getCategoryIcon(category.id)} 
+                    size={20} 
+                    color="#a8336e" 
+                    style={styles.categoryIcon}
+                  />
+                  <Text style={styles.sectionTitle}>{category.name}</Text>
+                </View>
+                <View style={styles.sectionDivider} />
+              </View>
+              <FlatList
+                data={categoryProducts}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id.toString()}
+                numColumns={horizontal ? 1 : getNumColumns}
+                key={`${category.id}-${horizontal ? "horizontal" : `grid-${getNumColumns}`}`}
+                horizontal={horizontal}
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={[
+                  styles.productList,
+                  horizontal ? styles.horizontalList : styles.gridList,
+                  isWeb && !horizontal && styles.webGrid,
+                ]}
+                columnWrapperStyle={!horizontal && getNumColumns > 1 && !isWeb ? styles.columnWrapper : null}
+              />
+            </View>
+          )
+        }
+        return null
+      })}
+    </ScrollView>
   )
 }
 
@@ -114,6 +173,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: "hidden",
     marginBottom: 30,
+    marginHorizontal: 'auto',
+    maxWidth: 1400,
+    width: '100%',
     ...(Platform.OS === "web"
       ? {
           boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
@@ -126,21 +188,40 @@ const styles = StyleSheet.create({
           elevation: 2,
         }),
   },
-  gridContainer: {
+  sectionContainer: {
+    marginBottom: 30,
     padding: Platform.OS === "web" ? 20 : 10,
   },
-  horizontalContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 15,
+  sectionHeader: {
+    marginBottom: 20,
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  categoryIcon: {
+    marginRight: 10,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#a8336e",
+    letterSpacing: 0.5,
+  },
+  sectionDivider: {
+    height: 2,
+    backgroundColor: "#f0f0f0",
+    marginTop: 8,
   },
   productList: {
-    paddingBottom: 10,
+    padding: 24,
   },
   gridList: {
-    paddingBottom: 20,
+    paddingBottom: 24,
   },
   horizontalList: {
-    paddingRight: 15,
+    paddingRight: 24,
   },
   webGrid: {
     ...(Platform.OS === "web"
@@ -148,8 +229,8 @@ const styles = StyleSheet.create({
           display: "flex",
           flexDirection: "row",
           flexWrap: "wrap",
-          justifyContent: "space-between",
-          gap: 15,
+          justifyContent: "center",
+          gap: 24,
         }
       : {}),
   },
@@ -157,52 +238,20 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   gridWrapper: {
-    marginBottom: 20,
+    marginBottom: 24,
     ...(Platform.OS !== "web"
       ? {
-          marginHorizontal: 5,
+          marginHorizontal: 12,
         }
       : {}),
   },
   horizontalWrapper: {
-    marginRight: 20,
+    marginRight: 24,
     width: 320,
   },
   columnWrapper: {
-    justifyContent: "space-between",
-    paddingHorizontal: 5,
-  },
-  noProducts: {
-    flex: 1,
     justifyContent: "center",
-    alignItems: "center",
-    padding: 40,
-    minHeight: 250,
-  },
-  noProductsIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#f9f0f5",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  noProductsEmoji: {
-    fontSize: 32,
-  },
-  noProductsText: {
-    textAlign: "center",
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 8,
-  },
-  noProductsSubtext: {
-    textAlign: "center",
-    fontSize: 15,
-    color: "#777",
-    lineHeight: 22,
+    paddingHorizontal: 12,
   },
 })
 
