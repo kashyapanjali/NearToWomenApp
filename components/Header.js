@@ -127,28 +127,28 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
 
           {/* Right Section: Nav Items and Cart */}
           <View style={styles.headerRightSection}>
-            {!isMobile && (
-              <TouchableOpacity 
-                style={[
-                  styles.navItem,
-                  isWeb && styles.webNavItem,
-                  isWeb && {
-                    ':hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      borderRadius: 8,
-                    }
+
+            {/* Sign In Section */}
+            <TouchableOpacity 
+              style={[
+                styles.navItem,
+                isWeb && styles.webNavItem,
+                isWeb && {
+                  ':hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: 8,
                   }
-                ]}
-              >
-                <View style={styles.signInContainer}>
-                  <Text style={styles.navItemTopSignInText}>Hello! Women</Text>
-                  <View style={styles.signInRow}>
-                    <Text style={styles.navItemBottomSignInText}>Sign In</Text>
-                    <Icon name="user" size={14} color="white" style={styles.signInIcon} />
-                  </View>
+                }
+              ]}
+            >
+              <View style={styles.signInContainer}>
+                <Text style={styles.navItemTopSignInText}>Hello! Women</Text>
+                <View style={styles.signInRow}>
+                  <Text style={styles.navItemBottomSignInText}>Sign In</Text>
+                  <Icon name="user" size={14} color="white" style={styles.signInIcon} />
                 </View>
-              </TouchableOpacity>
-            )}
+              </View>
+            </TouchableOpacity>
 
             {isWeb && windowWidth >= 768 && (
               <TouchableOpacity style={styles.navItem}>
@@ -176,13 +176,8 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
       {isMobile && menuOpen && (
         <View style={styles.mobileMenu}>
           <TouchableOpacity style={styles.mobileMenuItem}>
-            <View style={styles.mobileSignInContainer}>
-              <Text style={styles.mobileSignInText}>Hello! Women</Text>
-              <View style={styles.mobileSignInRow}>
-                <Text style={styles.mobileSignInButtonText}>Sign In</Text>
-                <Icon name="user" size={16} color="#a8336e" style={styles.mobileSignInIcon} />
-              </View>
-            </View>
+            <Icon name="user" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
+            <Text style={styles.mobileMenuText}>Account</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.mobileMenuItem}>
             <Icon name="heart" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
@@ -506,28 +501,6 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#f0f0f0",
     marginVertical: 5,
-  },
-  mobileSignInContainer: {
-    paddingVertical: 8,
-    width: '100%',
-  },
-  mobileSignInText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
-  },
-  mobileSignInRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  mobileSignInButtonText: {
-    fontSize: 16,
-    color: '#a8336e',
-    fontWeight: '600',
-    marginRight: 6,
-  },
-  mobileSignInIcon: {
-    marginTop: 2,
   },
 })
 
