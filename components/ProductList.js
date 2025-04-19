@@ -66,7 +66,7 @@ const ProductList = ({
         styles.productWrapper,
         horizontal ? styles.horizontalWrapper : styles.gridWrapper,
         isWeb && !horizontal && { width: getItemWidth() },
-        !isWeb && !horizontal && { width: '45%' } // Reduced from 48% to ensure gap
+        !isWeb && !horizontal && { width: '48%' }
       ]}
     >
       <ProductCard
@@ -216,10 +216,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   productList: {
-    padding: 24,
+    padding: Platform.OS === "web" ? 24 : 12,
   },
   gridList: {
-    paddingBottom: 24,
+    paddingBottom: Platform.OS === "web" ? 24 : 12,
   },
   horizontalList: {
     paddingRight: 24,
@@ -238,13 +238,14 @@ const styles = StyleSheet.create({
       : {}),
   },
   productWrapper: {
-    margin: 8,
+    margin: Platform.OS === "web" ? 8 : 4,
   },
   gridWrapper: {
-    marginBottom: 40,
+    marginBottom: Platform.OS === "web" ? 40 : 16,
     ...(Platform.OS !== "web"
       ? {
-          marginHorizontal: 10,
+          marginHorizontal: 4,
+          width: '48%',
         }
       : {}),
   },
@@ -253,9 +254,9 @@ const styles = StyleSheet.create({
     width: 320,
   },
   columnWrapper: {
-    justifyContent: "space-evenly",
-    gap: 20,
-    paddingHorizontal: 10,
+    justifyContent: "center",
+    gap: Platform.OS === "web" ? 20 : 8,
+    paddingHorizontal: Platform.OS === "web" ? 10 : 6,
     width: "100%",
   },
 })

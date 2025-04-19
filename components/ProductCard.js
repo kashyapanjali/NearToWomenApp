@@ -148,17 +148,14 @@ const ProductCard = ({ product, addToCart, isWeb, windowWidth: propWindowWidth, 
                 onPress={() => setShowQuickShop(true)}
                 activeOpacity={0.8}
               >
-                <Icon name="eye" size={20} color="#fff" />
+                <Icon name="eye" size={16} color="#fff" />
               </TouchableOpacity>
               <TouchableOpacity 
-                style={styles.mobileAddButton} 
+                style={styles.mobileQuickViewButton} 
                 onPress={() => addToCart(product)}
                 activeOpacity={0.8}
               >
-                <View style={styles.mobileAddButtonContent}>
-                  <Icon name="shopping-cart" size={18} color="#fff" />
-                  <Text style={styles.mobileAddButtonText}>Add to Cart</Text>
-                </View>
+                <Icon name="shopping-cart" size={16} color="#fff" />
               </TouchableOpacity>
             </View>
           )}
@@ -238,7 +235,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
-    height: Platform.OS === "web" ? 420 : 300,
+    height: Platform.OS === "web" ? 420 : 320,
     width: "100%",
     maxWidth: "100%",
   },
@@ -270,7 +267,7 @@ const styles = StyleSheet.create({
     position: "relative",
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-    height: Platform.OS === "web" ? 220 : 150,
+    height: Platform.OS === "web" ? 220 : 140,
   },
   horizontalImageContainer: {
     width: 150,
@@ -331,13 +328,17 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    height: Platform.OS === "web" ? 200 : 170,
+    height: Platform.OS === "web" ? 200 : 180,
   },
   horizontalInfoContainer: {
     flex: 1,
     borderLeftWidth: 1,
     borderLeftColor: "#f0f0f0",
     height: 180,
+  },
+  contentContainer: {
+    flex: 1,
+    marginBottom: Platform.OS === "web" ? 0 : 8,
   },
   name: {
     fontSize: Platform.OS === "web" ? 15 : 13,
@@ -346,29 +347,6 @@ const styles = StyleSheet.create({
     lineHeight: Platform.OS === "web" ? 22 : 18,
     fontWeight: "600",
     height: Platform.OS === "web" ? 44 : 36,
-    overflow: "hidden",
-  },
-  priceContainer: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: Platform.OS === "web" ? 10 : 4,
-  },
-  priceCurrency: {
-    fontSize: Platform.OS === "web" ? 13 : 11,
-    fontWeight: "normal",
-    color: "#e84a80",
-    marginTop: 2,
-  },
-  priceWhole: {
-    fontSize: Platform.OS === "web" ? 18 : 16,
-    fontWeight: "700",
-    color: "#e84a80",
-  },
-  priceCents: {
-    fontSize: Platform.OS === "web" ? 12 : 10,
-    fontWeight: "normal",
-    color: "#e84a80",
-    marginTop: 2,
   },
   description: {
     fontSize: Platform.OS === "web" ? 13 : 11,
@@ -376,13 +354,11 @@ const styles = StyleSheet.create({
     marginBottom: Platform.OS === "web" ? 12 : 6,
     lineHeight: Platform.OS === "web" ? 19 : 16,
     height: Platform.OS === "web" ? 38 : 32,
-    overflow: "hidden",
   },
   footer: {
     width: "100%",
-    marginTop: "auto",
-    paddingTop: Platform.OS === "web" ? 8 : 10,
-    paddingHorizontal: Platform.OS === "web" ? 0 : 8,
+    paddingTop: Platform.OS === "web" ? 8 : 0,
+    paddingHorizontal: Platform.OS === "web" ? 0 : 0,
   },
   lowStockText: {
     color: "#e84a80",
@@ -433,46 +409,46 @@ const styles = StyleSheet.create({
   mobileButtonContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    justifyContent: "center",
+    gap: 12,
     width: "100%",
-  },
-  mobileQuickViewButton: {
-    backgroundColor: "#c04d7c",
-    width: 42,
-    height: 42,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  mobileAddButton: {
-    backgroundColor: "#e6799f",
-    borderRadius: 8,
-    flex: 1,
-    height: 42,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  mobileAddButtonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100%",
+    marginTop: Platform.OS === "web" ? 0 : 6,
     paddingHorizontal: 12,
   },
-  mobileAddButtonText: {
-    color: "white",
-    fontSize: 14,
+  mobileQuickViewButton: {
+    backgroundColor: "#e6799f",
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  priceContainer: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: Platform.OS === "web" ? 10 : 6,
+  },
+  priceCurrency: {
+    fontSize: Platform.OS === "web" ? 13 : 12,
+    fontWeight: "600",
+    color: "#e84a80",
+    marginTop: 2,
+  },
+  priceWhole: {
+    fontSize: Platform.OS === "web" ? 18 : 17,
     fontWeight: "700",
-    marginLeft: 8,
-    letterSpacing: 0.3,
+    color: "#e84a80",
+  },
+  priceCents: {
+    fontSize: Platform.OS === "web" ? 12 : 12,
+    fontWeight: "600",
+    color: "#e84a80",
+    marginTop: 2,
   },
   cartIcon: {
     marginRight: 6,
@@ -622,9 +598,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     letterSpacing: 0.5,
-  },
-  contentContainer: {
-    flex: 1,
   },
 })
 
