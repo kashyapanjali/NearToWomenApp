@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Dimensions } from "react-native"
 import Icon from "react-native-vector-icons/FontAwesome"
 
-const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propWindowWidth }) => {
+const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propWindowWidth, onSignInClick }) => {
   const [searchText, setSearchText] = useState("")
   const [isFocused, setIsFocused] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -127,6 +127,7 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
                     }
                   }
                 ]}
+                onPress={onSignInClick}
               >
                 <View style={styles.signInContainer}>
                   <Text style={styles.navItemTopSignInText}>Hello! Women</Text>
@@ -163,7 +164,7 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
       {/* Mobile menu dropdown */}
       {isMobile && menuOpen && (
         <View style={styles.mobileMenu}>
-          <TouchableOpacity style={styles.mobileMenuItem}>
+          <TouchableOpacity style={styles.mobileMenuItem} onPress={onSignInClick}>
             <Icon name="user" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
             <Text style={styles.mobileMenuText}>Sign In</Text>
           </TouchableOpacity>
