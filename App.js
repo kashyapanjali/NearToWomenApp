@@ -7,11 +7,14 @@ import Banner from "./components/Banner"
 import ProductList from "./components/ProductList"
 import Footer from "./components/Footer"
 import Cart from "./components/Cart"
+import SignInSignup from "./components/SignInSignup"
 import { products } from "./data/product"
 import CategoryFilter from "./components/CategoryFilter"
 
 export default function App() {
   const [showCart, setShowCart] = useState(false)
+  const [showSignIn, setShowSignIn] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [cart, setCart] = useState([])
   const [activeCategory, setActiveCategory] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
@@ -72,97 +75,108 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#a8336e" barStyle="light-content" />
-      <Header
-        cartItemCount={cartItemCount}
-        toggleCart={() => setShowCart(true)}
-        onSearch={setSearchTerm}
-        isWeb={isWeb}
-        windowWidth={windowWidth}
-      />
-
-      <View style={styles.appContent}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <Banner isWeb={isWeb} />
-
-          <View style={styles.mainContent}>
-            <CategoryFilter
-              categories={womenCategories}
-              activeCategory={activeCategory}
-              setActiveCategory={setActiveCategory}
-              isWeb={isWeb}
-            />
-
-            {/* <Text style={styles.sectionTitle}>Featured Products</Text> */}
-            <ProductList
-              products={
-                activeCategory === "all" ? products : products.filter((product) => product.category === activeCategory)
-              }
-              categories={womenCategories}
-              activeCategory={activeCategory}
-              setActiveCategory={setActiveCategory}
-              searchTerm={searchTerm}
-              addToCart={addToCart}
-              isWeb={isWeb}
-              windowWidth={windowWidth}
-            />
-
-            {isWeb && (
-              <>
-                <View style={styles.sectionDivider} />
-
-                <View style={styles.recommendationsSection}>
-                  <Text style={styles.sectionTitle}>Safety Essentials</Text>
-                  <ProductList
-                    products={safetyProducts}
-                    categories={womenCategories}
-                    activeCategory="safety"
-                    setActiveCategory={setActiveCategory}
-                    searchTerm=""
-                    addToCart={addToCart}
-                    isWeb={isWeb}
-                    windowWidth={windowWidth}
-                    horizontal={true}
-                  />
-                </View>
-
-                <View style={styles.sectionDivider} />
-
-                <View style={styles.recommendationsSection}>
-                  <Text style={styles.sectionTitle}>Wellness Products</Text>
-                  <ProductList
-                    products={wellnessProducts}
-                    categories={womenCategories}
-                    activeCategory="wellness"
-                    setActiveCategory={setActiveCategory}
-                    searchTerm=""
-                    addToCart={addToCart}
-                    isWeb={isWeb}
-                    windowWidth={windowWidth}
-                    horizontal={true}
-                  />
-                </View>
-              </>
-            )}
-
-          </View>
-        </ScrollView>
-
-        <Footer isWeb={isWeb} />
-      </View>
-
-      {showCart && (
-        <Cart
-          cart={cart}
-          closeCart={() => setShowCart(false)}
-          addToCart={addToCart}
-          removeFromCart={removeFromCart}
-          isWeb={isWeb}
+      {showSignIn ? (
+        <SignInSignup 
+          onClose={() => setShowSignIn(false)}
+          onAuthenticated={() => {
+            setIsAuthenticated(true)
+            setShowSignIn(false)
+          }}
         />
+      ) : (
+        <>
+          <StatusBar backgroundColor="#a8336e" barStyle="light-content" />
+          <Header
+            cartItemCount={cartItemCount}
+            toggleCart={() => setShowCart(true)}
+            onSearch={setSearchTerm}
+            isWeb={isWeb}
+            windowWidth={windowWidth}
+            onSignInClick={() => setShowSignIn(true)}
+          />
+
+          <View style={styles.appContent}>
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={styles.scrollViewContent}
+              showsVerticalScrollIndicator={false}
+            >
+              <Banner isWeb={isWeb} />
+
+              <View style={styles.mainContent}>
+                <CategoryFilter
+                  categories={womenCategories}
+                  activeCategory={activeCategory}
+                  setActiveCategory={setActiveCategory}
+                  isWeb={isWeb}
+                />
+
+                <ProductList
+                  products={
+                    activeCategory === "all" ? products : products.filter((product) => product.category === activeCategory)
+                  }
+                  categories={womenCategories}
+                  activeCategory={activeCategory}
+                  setActiveCategory={setActiveCategory}
+                  searchTerm={searchTerm}
+                  addToCart={addToCart}
+                  isWeb={isWeb}
+                  windowWidth={windowWidth}
+                />
+
+                {isWeb && (
+                  <>
+                    <View style={styles.sectionDivider} />
+
+                    <View style={styles.recommendationsSection}>
+                      <Text style={styles.sectionTitle}>Safety Essentials</Text>
+                      <ProductList
+                        products={safetyProducts}
+                        categories={womenCategories}
+                        activeCategory="safety"
+                        setActiveCategory={setActiveCategory}
+                        searchTerm=""
+                        addToCart={addToCart}
+                        isWeb={isWeb}
+                        windowWidth={windowWidth}
+                        horizontal={true}
+                      />
+                    </View>
+
+                    <View style={styles.sectionDivider} />
+
+                    <View style={styles.recommendationsSection}>
+                      <Text style={styles.sectionTitle}>Wellness Products</Text>
+                      <ProductList
+                        products={wellnessProducts}
+                        categories={womenCategories}
+                        activeCategory="wellness"
+                        setActiveCategory={setActiveCategory}
+                        searchTerm=""
+                        addToCart={addToCart}
+                        isWeb={isWeb}
+                        windowWidth={windowWidth}
+                        horizontal={true}
+                      />
+                    </View>
+                  </>
+                )}
+              </View>
+            </ScrollView>
+
+            <Footer isWeb={isWeb} />
+          </View>
+
+          {showCart && (
+            <Cart
+              cart={cart}
+              closeCart={() => setShowCart(false)}
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+              isWeb={isWeb}
+            />
+          )}
+        </>
       )}
     </SafeAreaView>
   )
