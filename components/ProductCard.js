@@ -4,10 +4,12 @@
 import { useState } from "react"
 import { View, Text, Image, TouchableOpacity, StyleSheet, Platform, Modal, Dimensions } from "react-native"
 import Icon from "react-native-vector-icons/FontAwesome"
+import { useCart } from "../context/CartContext"
 
-const ProductCard = ({ product, addToCart, isWeb, windowWidth: propWindowWidth, horizontal = false }) => {
+const ProductCard = ({ product, isWeb, windowWidth: propWindowWidth, horizontal = false }) => {
   const [showQuickShop, setShowQuickShop] = useState(false)
   const [quantity, setQuantity] = useState(1)
+  const { addToCart } = useCart()
 
   // Use propWindowWidth if provided, otherwise get the screen width
   const windowWidth = propWindowWidth || Dimensions.get("window").width
@@ -74,12 +76,7 @@ const ProductCard = ({ product, addToCart, isWeb, windowWidth: propWindowWidth, 
 
   // Add to cart with selected quantity
   const handleAddToCart = () => {
-    // Add to cart multiple times based on quantity
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product)
-    }
-
-    // Reset and close
+    addToCart(product, quantity)
     setQuantity(1)
     setShowQuickShop(false)
   }
