@@ -10,17 +10,16 @@ import Cart from "./components/Cart"
 import SignInSignup from "./components/SignInSignup"
 import { products } from "./data/product"
 import CategoryFilter from "./components/CategoryFilter"
-import { CartProvider, useCart } from "./context/CartContext"
 
-const AppContent = () => {
+export default function App() {
   const [showCart, setShowCart] = useState(false)
   const [showSignIn, setShowSignIn] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [cart, setCart] = useState([])
   const [activeCategory, setActiveCategory] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
   const [windowWidth, setWindowWidth] = useState(Dimensions.get("window").width)
   const [isWeb, setIsWeb] = useState(Platform.OS === "web")
-  const { cartItems } = useCart()
 
   // Create predefined women's categories
   const womenCategories = [
@@ -50,7 +49,25 @@ const AppContent = () => {
     }
   }, [])
 
-  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0)
+  const addToCart = (product) => {
+    const existingItem = cart.find((item) => item.id === product.id)
+    if (existingItem) {
+      setCart(cart.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item)))
+    } else {
+      setCart([...cart, { ...product, quantity: 1 }])
+    }
+  }
+
+  const removeFromCart = (productId) => {
+    const existingItem = cart.find((item) => item.id === productId)
+    if (existingItem.quantity === 1) {
+      setCart(cart.filter((item) => item.id !== productId))
+    } else {
+      setCart(cart.map((item) => (item.id === productId ? { ...item, quantity: item.quantity - 1 } : item)))
+    }
+  }
+
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0)
 
   // Create recommendation sections
   const safetyProducts = products.filter((product) => product.category === "safety")
@@ -102,6 +119,7 @@ const AppContent = () => {
                   activeCategory={activeCategory}
                   setActiveCategory={setActiveCategory}
                   searchTerm={searchTerm}
+                  addToCart={addToCart}
                   isWeb={isWeb}
                   windowWidth={windowWidth}
                 />
@@ -118,6 +136,7 @@ const AppContent = () => {
                         activeCategory="safety"
                         setActiveCategory={setActiveCategory}
                         searchTerm=""
+                        addToCart={addToCart}
                         isWeb={isWeb}
                         windowWidth={windowWidth}
                         horizontal={true}
@@ -134,6 +153,7 @@ const AppContent = () => {
                         activeCategory="wellness"
                         setActiveCategory={setActiveCategory}
                         searchTerm=""
+                        addToCart={addToCart}
                         isWeb={isWeb}
                         windowWidth={windowWidth}
                         horizontal={true}
@@ -149,21 +169,16 @@ const AppContent = () => {
 
           {showCart && (
             <Cart
+              cart={cart}
               closeCart={() => setShowCart(false)}
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
               isWeb={isWeb}
             />
           )}
         </>
       )}
     </SafeAreaView>
-  )
-}
-
-export default function App() {
-  return (
-    <CartProvider>
-      <AppContent />
-    </CartProvider>
   )
 }
 

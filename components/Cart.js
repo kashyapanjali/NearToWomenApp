@@ -1,69 +1,11 @@
-import { useState } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, Platform, Alert, ActivityIndicator } from "react-native"
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, Platform } from "react-native"
 import Icon from "react-native-vector-icons/FontAwesome"
-import { apiService } from "../api/apiService";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCart } from "../context/CartContext";
 
-const Cart = ({ closeCart, isWeb }) => {
-  const [loading, setLoading] = useState(false);
-  const { cartItems, addToCart, removeFromCart, clearCart, getCartTotal } = useCart();
-  const total = getCartTotal();
+const Cart = ({ cart, closeCart, addToCart, removeFromCart, isWeb }) => {
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   const windowWidth = Dimensions.get("window").width
   const cartWidth = isWeb ? (windowWidth > 768 ? 420 : windowWidth * 0.8) : windowWidth
-
-  const handleCheckout = async () => {
-    try {
-      setLoading(true);
-      const user = await AsyncStorage.getItem("user");
-      if (!user) {
-        Alert.alert("Error", "Please sign in to proceed with checkout");
-        return;
-      }
-
-      const userData = JSON.parse(user);
-      const orderItems = cartItems.map(item => ({
-        quantity: item.quantity,
-        products: item.id
-      }));
-
-      const orderData = {
-        orderItems,
-        user: userData.id,
-        shippingAddress: userData.street || "Default Address",
-        city: userData.city || "Default City",
-        zip: userData.zip || "00000",
-        phone: userData.phone,
-        status: "pending",
-        totalPrice: total
-      };
-
-      const response = await apiService.orders.create(orderData);
-      if (response.data) {
-        Alert.alert(
-          "Success",
-          "Order placed successfully!",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                clearCart();
-                closeCart();
-              }
-            }
-          ]
-        );
-      }
-    } catch (error) {
-      Alert.alert(
-        "Error",
-        error.response?.data?.message || "Failed to place order. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <View style={[styles.overlay, isWeb && styles.webOverlay]}>
@@ -76,7 +18,7 @@ const Cart = ({ closeCart, isWeb }) => {
           </TouchableOpacity>
         </View>
 
-        {cartItems.length === 0 ? (
+        {cart.length === 0 ? (
           <View style={styles.emptyCart}>
             <View style={styles.emptyCartIconContainer}>
               <Icon name="shopping-cart" size={50} color="#e6799f" />
@@ -90,7 +32,7 @@ const Cart = ({ closeCart, isWeb }) => {
         ) : (
           <>
             <ScrollView style={styles.itemsContainer}>
-              {cartItems.map((item) => (
+              {cart.map((item) => (
                 <View key={item.id} style={styles.cartItem}>
                   <Image source={{ uri: item.image || "https://via.placeholder.com/100" }} style={styles.itemImage} />
                   <View style={styles.itemInfo}>
@@ -119,18 +61,9 @@ const Cart = ({ closeCart, isWeb }) => {
                 <Text style={styles.totalAmount}>${total.toFixed(2)}</Text>
               </View>
               <Text style={styles.taxNote}>Taxes and shipping calculated at checkout</Text>
-              <TouchableOpacity 
-                style={[styles.checkoutButton, loading && styles.buttonDisabled]}
-                onPress={handleCheckout}
-                disabled={loading}>
-                {loading ? (
-                  <ActivityIndicator color="white" />
-                ) : (
-                  <>
-                    <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
-                    <Icon name="arrow-right" size={14} color="white" style={styles.checkoutIcon} />
-                  </>
-                )}
+              <TouchableOpacity style={styles.checkoutButton}>
+                <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
+                <Icon name="arrow-right" size={14} color="white" style={styles.checkoutIcon} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.continueShoppingButton} onPress={closeCart}>
                 <Text style={styles.continueShoppingText}>Continue Shopping</Text>
@@ -378,9 +311,6 @@ const styles = StyleSheet.create({
     color: "#666",
     fontSize: 14,
     fontWeight: "500",
-  },
-  buttonDisabled: {
-    opacity: 0.7,
   },
 })
 
