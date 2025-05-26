@@ -3,6 +3,16 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL, API_TIMEOUT, ENDPOINTS } from "./config";
 
+// Create a public API instance for endpoints that don't require authentication
+const publicApi = axios.create({
+	baseURL: API_URL,
+	timeout: API_TIMEOUT,
+	headers: {
+		"Content-Type": "application/json",
+	},
+});
+
+// Create an authenticated API instance
 const api = axios.create({
 	baseURL: API_URL,
 	timeout: API_TIMEOUT,
@@ -32,20 +42,20 @@ api.interceptors.response.use(
 		if (error.response?.status === 401) {
 			// Handle unauthorized access
 			await AsyncStorage.removeItem("token");
-			// You might want to redirect to login here
+			await AsyncStorage.removeItem("user");
 		}
 		return Promise.reject(error);
 	}
 );
 
 export const apiService = {
-	// Auth APIs
+	// Auth APIs - using publicApi for registration and login
 	auth: {
 		login: (email, password) => 
-			api.post(ENDPOINTS.AUTH.LOGIN, { email, password }),
+			publicApi.post(ENDPOINTS.AUTH.LOGIN, { email, password }),
 		
 		register: (userData) => 
-			api.post(ENDPOINTS.AUTH.REGISTER, userData),
+			publicApi.post(ENDPOINTS.AUTH.REGISTER, userData),
 	},
 
 	// Product APIs
@@ -133,5 +143,8 @@ export const apiService = {
 		
 		delete: (id) => 
 			api.delete(`${ENDPOINTS.USERS.BASE}/${id}`),
+		
+		update: (id, userData) => 
+			api.put(`${ENDPOINTS.USERS.BASE}/${id}`, userData),
 	},
 };
