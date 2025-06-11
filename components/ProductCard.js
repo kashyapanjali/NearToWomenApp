@@ -92,7 +92,7 @@ const ProductCard = ({ product, addToCart, isWeb, windowWidth: propWindowWidth, 
         onPress={() => setShowQuickShop(true)}
       >
         <Image
-          source={{ uri: product.image || "https://via.placeholder.com/200" }}
+          source={{ uri: product.image || "https://placehold.co/200x200" }}
           style={styles.image}
           resizeMode="contain"
         />
@@ -181,7 +181,7 @@ const ProductCard = ({ product, addToCart, isWeb, windowWidth: propWindowWidth, 
             <View style={[styles.quickShopContent, dynamicStyles.quickShopContent]}>
               <View style={[styles.quickShopImageContainer, dynamicStyles.quickShopImageContainer]}>
                 <Image
-                  source={{ uri: product.image || "https://via.placeholder.com/200" }}
+                  source={{ uri: product.image || "https://placehold.co/200x200" }}
                   style={styles.quickShopImage}
                   resizeMode="contain"
                 />

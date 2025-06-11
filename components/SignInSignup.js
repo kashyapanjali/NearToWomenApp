@@ -1,37 +1,90 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { apiService } from "../api/endpoints";
 
 const SignInSignup = ({ onClose, onAuthenticated }) => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+  const [loading, setLoading] = useState(false);
 
-  const toggleForm = () => {
-    setIsSignUp((prev) => !prev);
-    setEmail("");
-    setPassword("");
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const register = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      });
+      
+      // Store the token and user data
+      if (response.token) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+      }
+      
+      Alert.alert("Success", "Account created successfully!");
+      onAuthenticated();
+    } catch (error) {
+      Alert.alert("Error", error.message || "Failed to create account");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.login({
+        email: formData.email,
+        password: formData.password
+      });
+      
+      // Store the token and user data
+      if (response.token) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+      }
+      
+      Alert.alert("Success", "Logged in successfully!");
+      onAuthenticated();
+    } catch (error) {
+      Alert.alert("Error", error.message || "Failed to login");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill all fields.");
-      return;
-    }
-
     if (isSignUp) {
-      // Handle sign up logic here
-      Alert.alert("Success", "Account created!");
-      onAuthenticated();
+      register();
     } else {
-      // Handle sign in logic here
-      Alert.alert("Success", "Logged in!");
-      onAuthenticated();
+      login();
     }
   };
 
+  const toggleForm = () => {
+    setIsSignUp((prev) => !prev);
+    setFormData({
+      name: "",
+      email: "",
+      password: ""
+    });
+  };
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoText}>NearToWomen</Text>
@@ -44,12 +97,22 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
             {isSignUp ? "Join our community of women" : "Sign in to your account"}
           </Text>
 
+          {isSignUp && (
+            <TextInput
+              style={styles.input}
+              placeholder="Full Name"
+              placeholderTextColor="#888"
+              value={formData.name}
+              onChangeText={(value) => handleInputChange('name', value)}
+            />
+          )}
+
           <TextInput
             style={styles.input}
             placeholder="Email"
             placeholderTextColor="#888"
-            value={email}
-            onChangeText={setEmail}
+            value={formData.email}
+            onChangeText={(value) => handleInputChange('email', value)}
             keyboardType="email-address"
             autoCapitalize="none"
           />
@@ -59,12 +122,18 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
             placeholder="Password"
             placeholderTextColor="#888"
             secureTextEntry
-            value={password}
-            onChangeText={setPassword}
+            value={formData.password}
+            onChangeText={(value) => handleInputChange('password', value)}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>{isSignUp ? "Create Account" : "Sign In"}</Text>
+          <TouchableOpacity 
+            style={[styles.button, loading && styles.buttonDisabled]} 
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? "Please wait..." : (isSignUp ? "Create Account" : "Sign In")}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={toggleForm} style={styles.toggleContainer}>
@@ -77,7 +146,7 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -152,6 +221,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginTop: 8,
+  },
+  buttonDisabled: {
+    backgroundColor: "#ccc",
   },
   buttonText: {
     color: "#fff",

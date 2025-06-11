@@ -34,7 +34,7 @@ const Cart = ({ cart, closeCart, addToCart, removeFromCart, isWeb }) => {
             <ScrollView style={styles.itemsContainer}>
               {cart.map((item) => (
                 <View key={item.id} style={styles.cartItem}>
-                  <Image source={{ uri: item.image || "https://via.placeholder.com/100" }} style={styles.itemImage} />
+                  <Image source={{ uri: item.image || "https://placehold.co/100x100" }} style={styles.itemImage} />
                   <View style={styles.itemInfo}>
                     <Text style={styles.itemName} numberOfLines={2}>
                       {item.name}

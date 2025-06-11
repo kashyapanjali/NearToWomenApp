@@ -6,7 +6,7 @@ export const products = [
     price: 12.99,
     category: "menstrual",
     description: "Pack of 10 reusable organic cotton pads. Soft, chemical-free, and environmentally friendly.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 45,
   },
   {
@@ -15,7 +15,7 @@ export const products = [
     price: 24.99,
     category: "menstrual",
     description: "Medical-grade silicone menstrual cup. Reusable for up to 10 years.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 38,
   },
   {
@@ -24,7 +24,7 @@ export const products = [
     price: 15.99,
     category: "menstrual",
     description: "Pack of 5 adhesive heat patches. Provides up to 8 hours of soothing relief.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 27,
   },
   {
@@ -33,7 +33,7 @@ export const products = [
     price: 39.99,
     category: "menstrual",
     description: "Includes menstrual cup, organic pads, heat patches, and educational booklet.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 19,
   },
   {
@@ -42,7 +42,7 @@ export const products = [
     price: 29.99,
     category: "food",
     description: "Plant-based protein powder with added iron. Great for smoothies during menstruation.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 34,
   },
   {
@@ -51,7 +51,7 @@ export const products = [
     price: 19.99,
     category: "food",
     description: "30-day supply of essential vitamins and minerals tailored for women's health.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 50,
   },
   {
@@ -60,7 +60,7 @@ export const products = [
     price: 24.99,
     category: "food",
     description: "60 capsules of omega-3 fatty acids. Supports brain and heart health.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 42,
   },
   {
@@ -69,7 +69,7 @@ export const products = [
     price: 18.99,
     category: "food",
     description: "Set of 4 caffeine-free herbal teas. Includes chamomile, ginger, peppermint, and raspberry leaf.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 29,
   },
   {
@@ -78,7 +78,7 @@ export const products = [
     price: 19.99,
     category: "safety",
     description: "140dB emergency alarm with LED light. Easily attaches to keys or bag.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 23,
   },
   {
@@ -87,7 +87,7 @@ export const products = [
     price: 24.99,
     category: "safety",
     description: "Police-strength pepper spray with belt clip. Effective 10-foot range.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 17,
   },
   {
@@ -96,7 +96,7 @@ export const products = [
     price: 12.99,
     category: "safety",
     description: "Set of 3 high-decibel whistles. Water-resistant and compact design.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 45,
   },
   {
@@ -105,7 +105,7 @@ export const products = [
     price: 34.99,
     category: "safety",
     description: "Includes personal alarm, reflective gear, ID bracelet, and safety app subscription.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 15,
   },
   {
@@ -114,7 +114,7 @@ export const products = [
     price: 39.99,
     category: "wellness",
     description: "Non-slip eco-friendly yoga mat. Perfect for home practice or studio use.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 22,
   },
   {
@@ -123,7 +123,7 @@ export const products = [
     price: 29.99,
     category: "wellness",
     description: "Ultrasonic essential oil diffuser with color-changing LED light.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 31,
   },
   {
@@ -132,7 +132,7 @@ export const products = [
     price: 49.99,
     category: "wellness",
     description: "Includes meditation cushion, mat, and guided meditation audio files.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 18,
   },
   {
@@ -141,7 +141,7 @@ export const products = [
     price: 59.99,
     category: "wellness",
     description: "Complete set with weighted eye mask, lavender spray, herbal tea, and sleep journal.",
-    image: "https://via.placeholder.com/200",
+    image: "https://placehold.co/200x200",
     stock: 10,
   },
 ]
