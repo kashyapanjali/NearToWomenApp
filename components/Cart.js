@@ -1,11 +1,111 @@
-import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, Platform } from "react-native"
+import { useState, useEffect } from "react"
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, Platform, Alert } from "react-native"
 import Icon from "react-native-vector-icons/FontAwesome"
+import { API, apiService } from "../api/endpoints"
 
-const Cart = ({ cart, closeCart, addToCart, removeFromCart, isWeb }) => {
+const Cart = ({ closeCart, isWeb }) => {
+  const [cart, setCart] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  // Get user ID from localStorage
+  const userId = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user'))?.id : null
+
+  useEffect(() => {
+    if (userId) {
+      fetchCart()
+    }
+  }, [userId])
+
+  const fetchCart = async () => {
+    try {
+      setLoading(true)
+      const response = await apiService.request(API.cart.getCart(userId))
+      setCart(response.items || [])
+      setError(null)
+    } catch (err) {
+      setError(err.message)
+      Alert.alert("Error", "Failed to fetch cart items")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAddToCart = async (product) => {
+    try {
+      await apiService.request(API.cart.addToCart, {
+        method: 'POST',
+        body: JSON.stringify({
+          userId,
+          productId: product.id,
+          quantity: 1
+        })
+      })
+      fetchCart() // Refresh cart after adding
+    } catch (err) {
+      Alert.alert("Error", "Failed to add item to cart")
+    }
+  }
+
+  const handleRemoveFromCart = async (productId) => {
+    try {
+      await apiService.request(API.cart.removeFromCart(userId), {
+        method: 'DELETE',
+        body: JSON.stringify({ productId })
+      })
+      fetchCart() // Refresh cart after removing
+    } catch (err) {
+      Alert.alert("Error", "Failed to remove item from cart")
+    }
+  }
+
+  const handleClearCart = async () => {
+    try {
+      await apiService.request(API.cart.clearCart(userId), {
+        method: 'DELETE'
+      })
+      setCart([])
+    } catch (err) {
+      Alert.alert("Error", "Failed to clear cart")
+    }
+  }
+
+  const handleQuantityChange = async (productId, newQuantity) => {
+    try {
+      await apiService.request(API.cart.updateCart(userId), {
+        method: 'PUT',
+        body: JSON.stringify({ productId, quantity: newQuantity })
+      })
+      fetchCart() // Refresh cart after updating quantity
+    } catch (err) {
+      Alert.alert("Error", "Failed to update quantity")
+    }
+  }
+
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   const windowWidth = Dimensions.get("window").width
   const cartWidth = isWeb ? (windowWidth > 768 ? 420 : windowWidth * 0.8) : windowWidth
+
+  if (loading) {
+    return (
+      <View style={[styles.overlay, isWeb && styles.webOverlay]}>
+        <View style={[styles.cartContainer, { width: cartWidth }]}>
+          <Text style={styles.loadingText}>Loading cart...</Text>
+        </View>
+      </View>
+    )
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.overlay, isWeb && styles.webOverlay]}>
+        <View style={[styles.cartContainer, { width: cartWidth }]}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      </View>
+    )
+  }
 
   return (
     <View style={[styles.overlay, isWeb && styles.webOverlay]}>
@@ -41,16 +141,28 @@ const Cart = ({ cart, closeCart, addToCart, removeFromCart, isWeb }) => {
                     </Text>
                     <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
                     <View style={styles.quantityControl}>
-                      <TouchableOpacity style={styles.quantityButton} onPress={() => removeFromCart(item.id)}>
+                      <TouchableOpacity 
+                        style={styles.quantityButton} 
+                        onPress={() => handleQuantityChange(item.id, Math.max(1, item.quantity - 1))}
+                      >
                         <Icon name="minus" size={10} color="#a8336e" />
                       </TouchableOpacity>
                       <Text style={styles.quantity}>{item.quantity}</Text>
-                      <TouchableOpacity style={styles.quantityButton} onPress={() => addToCart(item)}>
+                      <TouchableOpacity 
+                        style={styles.quantityButton} 
+                        onPress={() => handleQuantityChange(item.id, item.quantity + 1)}
+                      >
                         <Icon name="plus" size={10} color="#a8336e" />
                       </TouchableOpacity>
                     </View>
                   </View>
                   <Text style={styles.itemTotal}>${(item.price * item.quantity).toFixed(2)}</Text>
+                  <TouchableOpacity 
+                    style={styles.removeButton}
+                    onPress={() => handleRemoveFromCart(item.id)}
+                  >
+                    <Icon name="trash" size={14} color="#e84a80" />
+                  </TouchableOpacity>
                 </View>
               ))}
             </ScrollView>
@@ -64,6 +176,12 @@ const Cart = ({ cart, closeCart, addToCart, removeFromCart, isWeb }) => {
               <TouchableOpacity style={styles.checkoutButton}>
                 <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
                 <Icon name="arrow-right" size={14} color="white" style={styles.checkoutIcon} />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.clearCartButton} 
+                onPress={handleClearCart}
+              >
+                <Text style={styles.clearCartText}>Clear Cart</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.continueShoppingButton} onPress={closeCart}>
                 <Text style={styles.continueShoppingText}>Continue Shopping</Text>
@@ -311,6 +429,32 @@ const styles = StyleSheet.create({
     color: "#666",
     fontSize: 14,
     fontWeight: "500",
+  },
+  loadingText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+    padding: 20,
+  },
+  errorText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#e84a80',
+    padding: 20,
+  },
+  removeButton: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  clearCartButton: {
+    padding: 12,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  clearCartText: {
+    color: '#e84a80',
+    fontSize: 14,
+    fontWeight: '500',
   },
 })
 

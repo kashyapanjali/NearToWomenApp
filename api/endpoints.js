@@ -15,6 +15,11 @@ const API = {
     profile: `${BASE_URL}/users`,
     updateProfile: `${BASE_URL}/users`,
     getUserCount: `${BASE_URL}/users/count`,
+    admin: {
+      getAll: `${BASE_URL}/users/admin`,
+      getById: (id) => `${BASE_URL}/users/admin/${id}`,
+      delete: (id) => `${BASE_URL}/users/admin/${id}`,
+    }
   },
 
   // User Features
@@ -37,12 +42,19 @@ const API = {
     search: `${BASE_URL}/products/search`,
     getFeatured: (count) => `${BASE_URL}/products/get/Featured/${count}`,
     getCount: `${BASE_URL}/products/get/count`,
+    add: `${BASE_URL}/products`,
+    update: (id) => `${BASE_URL}/products/${id}`,
+    delete: (id) => `${BASE_URL}/products/${id}`,
+    uploadGallery: (id) => `${BASE_URL}/products/gallery-images/${id}`,
   },
 
   // Categories
   categories: {
     getAll: `${BASE_URL}/category`,
     getById: (id) => `${BASE_URL}/category/${id}`,
+    add: `${BASE_URL}/category`,
+    update: (id) => `${BASE_URL}/category/${id}`,
+    delete: (id) => `${BASE_URL}/category/${id}`,
   },
 
   // Cart
@@ -72,6 +84,8 @@ const API = {
   purchases: {
     directPurchase: (userId) => `${BASE_URL}/purchase/direct/${userId}`,
     cartPurchase: (userId) => `${BASE_URL}/purchase/cart/${userId}`,
+    getUserOrders: (userId) => `${BASE_URL}/purchase/user/${userId}`,
+    getOrderDetails: (orderId) => `${BASE_URL}/purchase/${orderId}`,
   },
 
   // UPI Payments
@@ -124,6 +138,29 @@ const apiService = {
     });
   },
 
+  // User Features
+  async addAddress(addressData) {
+    return this.request(API.userFeatures.addAddress, {
+      method: 'POST',
+      body: JSON.stringify(addressData),
+    });
+  },
+
+  async getAddresses(userId) {
+    return this.request(API.userFeatures.getAddresses(userId));
+  },
+
+  async addUpiMethod(upiData) {
+    return this.request(API.userFeatures.addUpiMethod, {
+      method: 'POST',
+      body: JSON.stringify(upiData),
+    });
+  },
+
+  async getUpiMethods(userId) {
+    return this.request(API.userFeatures.getUpiMethods(userId));
+  },
+
   // Products
   async getProducts() {
     return this.request(API.products.getAll);
@@ -171,6 +208,10 @@ const apiService = {
 
   async getPaymentStatus(orderId) {
     return this.request(API.upiPayments.getPaymentStatus(orderId));
+  },
+
+  async getPaymentHistory(userId) {
+    return this.request(API.upiPayments.getPaymentHistory(userId));
   },
 };
 
