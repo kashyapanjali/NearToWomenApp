@@ -19,6 +19,13 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
     }));
   };
 
+  const triggerStorageEvent = () => {
+    // Trigger a custom event to notify other components about the login
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('storage'));
+    }
+  };
+
   const register = async () => {
     try {
       setLoading(true);
@@ -32,6 +39,7 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
       if (response.token) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
+        triggerStorageEvent(); // Trigger storage event
       }
       
       Alert.alert("Success", "Account created successfully!");
@@ -55,6 +63,7 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
       if (response.token) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
+        triggerStorageEvent(); // Trigger storage event
       }
       
       Alert.alert("Success", "Logged in successfully!");

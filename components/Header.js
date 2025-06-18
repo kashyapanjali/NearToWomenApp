@@ -2,16 +2,49 @@
 
 // components/Header.js
 import { useState, useEffect } from "react"
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Dimensions } from "react-native"
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Dimensions, Alert } from "react-native"
 import Icon from "react-native-vector-icons/FontAwesome"
 
 const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propWindowWidth, onSignInClick }) => {
   const [searchText, setSearchText] = useState("")
   const [isFocused, setIsFocused] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [user, setUser] = useState(null)
+  const [showUserMenu, setShowUserMenu] = useState(false)
   
   // Use propWindowWidth if provided, otherwise get the screen width
   const windowWidth = propWindowWidth || (typeof window !== 'undefined' ? Dimensions.get("window").width : 0)
+  
+  // Check for user authentication on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userData = localStorage.getItem('user')
+      const token = localStorage.getItem('token')
+      if (userData && token) {
+        setUser(JSON.parse(userData))
+      } else {
+        setUser(null)
+      }
+    }
+  }, [])
+
+  // Listen for storage changes (when user logs in/out)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const userData = localStorage.getItem('user')
+      const token = localStorage.getItem('token')
+      if (userData && token) {
+        setUser(JSON.parse(userData))
+      } else {
+        setUser(null)
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', handleStorageChange)
+      return () => window.removeEventListener('storage', handleStorageChange)
+    }
+  }, [])
   
   // Reset menu on window resize
   useEffect(() => {
@@ -30,6 +63,60 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
   const handleSearch = (text) => {
     setSearchText(text)
     onSearch(text)
+  }
+
+  const handleLogout = () => {
+    console.log('Logout button clicked') // Debug log
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: performLogout
+        }
+      ]
+    )
+  }
+
+  const performLogout = () => {
+    console.log('Performing logout...') // Debug log
+    try {
+      // Clear localStorage
+      localStorage.removeItem('user')
+      localStorage.removeItem('token')
+      
+      console.log('LocalStorage cleared') // Debug log
+      
+      // Update state
+      setUser(null)
+      setShowUserMenu(false)
+      
+      // Trigger storage event to notify other components
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('storage'))
+      }
+      
+      // Show success message
+      Alert.alert("Success", "Logged out successfully!")
+      
+      // Force a page refresh to ensure all components update
+      if (typeof window !== 'undefined') {
+        window.location.reload()
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+      Alert.alert("Error", "Failed to logout. Please try again.")
+    }
+  }
+
+  const toggleUserMenu = () => {
+    setShowUserMenu(!showUserMenu)
   }
 
   // Dynamic breakpoint-based styling
@@ -114,29 +201,85 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
 
           {/* Right Section: Nav Items and Cart */}
           <View style={styles.headerRightSection}>
-            {/* Sign In Section - Only show on larger screens */}
-            {!isMobile && (
-              <TouchableOpacity 
-                style={[
-                  styles.navItem,
-                  isWeb && styles.webNavItem,
-                  isWeb && {
-                    ':hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      borderRadius: 8,
+            {/* User Profile Section - Show when logged in */}
+            {user ? (
+              <View style={styles.userProfileContainer}>
+                <TouchableOpacity 
+                  style={[
+                    styles.navItem,
+                    isWeb && styles.webNavItem,
+                    isWeb && {
+                      ':hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        borderRadius: 8,
+                      }
                     }
-                  }
-                ]}
-                onPress={onSignInClick}
-              >
-                <View style={styles.signInContainer}>
-                  <Text style={styles.navItemTopSignInText}>Hello! Women</Text>
-                  <View style={styles.signInRow}>
-                    <Text style={styles.navItemBottomSignInText}>Sign In</Text>
-                    <Icon name="user" size={14} color="white" style={styles.signInIcon} />
+                  ]}
+                  onPress={toggleUserMenu}
+                >
+                  <View style={styles.userContainer}>
+                    <Text style={styles.navItemTopText}>Hello, {user.name}</Text>
+                    <View style={styles.userRow}>
+                      <Text style={styles.navItemBottomText}>My Account</Text>
+                      <Icon name="chevron-down" size={12} color="white" style={styles.userIcon} />
+                    </View>
                   </View>
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+
+                {/* User Dropdown Menu */}
+                {showUserMenu && (
+                  <View style={styles.userDropdown}>
+                    <TouchableOpacity style={styles.dropdownItem}>
+                      <Icon name="user" size={14} color="#a8336e" style={styles.dropdownIcon} />
+                      <Text style={styles.dropdownText}>Profile</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.dropdownItem}>
+                      <Icon name="file-text-o" size={14} color="#a8336e" style={styles.dropdownIcon} />
+                      <Text style={styles.dropdownText}>Orders</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.dropdownItem}>
+                      <Icon name="heart" size={14} color="#a8336e" style={styles.dropdownIcon} />
+                      <Text style={styles.dropdownText}>Wishlist</Text>
+                    </TouchableOpacity>
+                    <View style={styles.dropdownDivider} />
+                    <TouchableOpacity 
+                      style={styles.dropdownItem} 
+                      onPress={() => {
+                        console.log('Dropdown logout clicked')
+                        performLogout()
+                      }}
+                    >
+                      <Icon name="sign-out" size={14} color="#e84a80" style={styles.dropdownIcon} />
+                      <Text style={[styles.dropdownText, styles.logoutText]}>Logout</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            ) : (
+              /* Sign In Section - Only show when not logged in */
+              !isMobile && (
+                <TouchableOpacity 
+                  style={[
+                    styles.navItem,
+                    isWeb && styles.webNavItem,
+                    isWeb && {
+                      ':hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        borderRadius: 8,
+                      }
+                    }
+                  ]}
+                  onPress={onSignInClick}
+                >
+                  <View style={styles.signInContainer}>
+                    <Text style={styles.navItemTopSignInText}>Hello! Women</Text>
+                    <View style={styles.signInRow}>
+                      <Text style={styles.navItemBottomSignInText}>Sign In</Text>
+                      <Icon name="user" size={14} color="white" style={styles.signInIcon} />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )
             )}
 
             {isWeb && windowWidth >= 768 && (
@@ -157,6 +300,20 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
               </View>
               {isWeb && windowWidth >= 480 && <Text style={styles.cartText}>Cart</Text>}
             </TouchableOpacity>
+
+            {/* Test Logout Button - Remove this after testing */}
+            {user && (
+              <TouchableOpacity 
+                style={[styles.cartButton, { marginLeft: 10 }]} 
+                onPress={() => {
+                  console.log('Test logout clicked')
+                  performLogout()
+                }}
+              >
+                <Icon name="sign-out" size={responsiveStyles.iconSize} color="white" />
+                {isWeb && windowWidth >= 480 && <Text style={styles.cartText}>Logout</Text>}
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
@@ -164,19 +321,32 @@ const Header = ({ cartItemCount, toggleCart, onSearch, isWeb, windowWidth: propW
       {/* Mobile menu dropdown */}
       {isMobile && menuOpen && (
         <View style={styles.mobileMenu}>
-          <TouchableOpacity style={styles.mobileMenuItem} onPress={onSignInClick}>
-            <Icon name="user" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
-            <Text style={styles.mobileMenuText}>Sign In</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.mobileMenuItem}>
-            <Icon name="heart" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
-            <Text style={styles.mobileMenuText}>Wishlist</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.mobileMenuItem}>
-            <Icon name="file-text-o" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
-            <Text style={styles.mobileMenuText}>Orders</Text>
-          </TouchableOpacity>
-          <View style={styles.mobileDivider} />
+          {user ? (
+            <>
+              <TouchableOpacity style={styles.mobileMenuItem}>
+                <Icon name="user" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
+                <Text style={styles.mobileMenuText}>My Account</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.mobileMenuItem}>
+                <Icon name="file-text-o" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
+                <Text style={styles.mobileMenuText}>Orders</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.mobileMenuItem}>
+                <Icon name="heart" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
+                <Text style={styles.mobileMenuText}>Wishlist</Text>
+              </TouchableOpacity>
+              <View style={styles.mobileDivider} />
+              <TouchableOpacity style={styles.mobileMenuItem} onPress={performLogout}>
+                <Icon name="sign-out" size={16} color="#e84a80" style={styles.mobileMenuIcon} />
+                <Text style={[styles.mobileMenuText, styles.logoutText]}>Logout</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity style={styles.mobileMenuItem} onPress={onSignInClick}>
+              <Icon name="user" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
+              <Text style={styles.mobileMenuText}>Sign In</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity style={styles.mobileMenuItem}>
             <Icon name="gift" size={16} color="#a8336e" style={styles.mobileMenuIcon} />
             <Text style={styles.mobileMenuText}>Today's Deals</Text>
@@ -489,6 +659,55 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#f0f0f0",
     marginVertical: 5,
+  },
+  userProfileContainer: {
+    position: 'relative',
+  },
+  userContainer: {
+    alignItems: 'flex-start',
+  },
+  userRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userIcon: {
+    marginTop: 2,
+    marginLeft: 4,
+  },
+  userDropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 8,
+    minWidth: 150,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    zIndex: 1000,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  dropdownText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  logoutText: {
+    color: '#e84a80',
+    fontWeight: '500',
+  },
+  dropdownDivider: {
+    height: 1,
+    backgroundColor: '#f0f0f0',
+    marginVertical: 4,
   },
 })
 
