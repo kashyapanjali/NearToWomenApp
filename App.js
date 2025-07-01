@@ -10,6 +10,8 @@ import Cart from "./components/Cart"
 import SignInSignup from "./components/SignInSignup"
 import { products } from "./data/product"
 import CategoryFilter from "./components/CategoryFilter"
+import AdminDashboardPanel from "./components/admin/AdminDashboardPanel";
+
 
 export default function App() {
   const [showCart, setShowCart] = useState(false)
@@ -20,6 +22,12 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState("")
   const [windowWidth, setWindowWidth] = useState(Dimensions.get("window").width)
   const [isWeb, setIsWeb] = useState(Platform.OS === "web")
+
+  const user =
+  typeof window !== "undefined" && localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
+  const isAdmin = user && user.role === "admin";
 
   // Create predefined women's categories
   const womenCategories = [
@@ -83,9 +91,14 @@ export default function App() {
             setShowSignIn(false)
           }}
         />
-      ) : (
+      ) : isAdmin ? (
+        // If admin, show the admin dashboard
+        <AdminDashboardPanel/>
+      ):(
         <>
-          <StatusBar backgroundColor="#a8336e" barStyle="light-content" />
+
+        {/* ... your existing e-shop code ... */}
+        <StatusBar backgroundColor="#a8336e" barStyle="light-content" />
           <Header
             cartItemCount={cartItemCount}
             toggleCart={() => setShowCart(true)}
