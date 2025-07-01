@@ -14,6 +14,9 @@ const Cart = ({ closeCart, isWeb }) => {
   useEffect(() => {
     if (userId) {
       fetchCart()
+    } else {
+      setLoading(false)
+      setError("Please login to view your cart")
     }
   }, [userId])
 
@@ -21,9 +24,11 @@ const Cart = ({ closeCart, isWeb }) => {
     try {
       setLoading(true)
       const response = await apiService.request(API.cart.getCart(userId))
-      setCart(response.items || [])
+      console.log('Cart response:', response) // Debug log
+      setCart(response.cartItems || [])
       setError(null)
     } catch (err) {
+      console.error('Fetch cart error:', err) // Debug log
       setError(err.message)
       Alert.alert("Error", "Failed to fetch cart items")
     } finally {
@@ -33,6 +38,7 @@ const Cart = ({ closeCart, isWeb }) => {
 
   const handleAddToCart = async (product) => {
     try {
+      console.log('Adding to cart:', product) // Debug log
       await apiService.request(API.cart.addToCart, {
         method: 'POST',
         body: JSON.stringify({
@@ -43,46 +49,59 @@ const Cart = ({ closeCart, isWeb }) => {
       })
       fetchCart() // Refresh cart after adding
     } catch (err) {
+      console.error('Add to cart error:', err) // Debug log
       Alert.alert("Error", "Failed to add item to cart")
     }
   }
 
   const handleRemoveFromCart = async (productId) => {
     try {
+      console.log('Removing from cart:', productId) // Debug log
       await apiService.request(API.cart.removeFromCart(userId), {
         method: 'DELETE',
         body: JSON.stringify({ productId })
       })
       fetchCart() // Refresh cart after removing
     } catch (err) {
+      console.error('Remove from cart error:', err) // Debug log
       Alert.alert("Error", "Failed to remove item from cart")
     }
   }
 
   const handleClearCart = async () => {
     try {
+      console.log('Clearing cart') // Debug log
       await apiService.request(API.cart.clearCart(userId), {
         method: 'DELETE'
       })
       setCart([])
+      Alert.alert("Success", "Cart cleared successfully!")
     } catch (err) {
+      console.error('Clear cart error:', err) // Debug log
       Alert.alert("Error", "Failed to clear cart")
     }
   }
 
   const handleQuantityChange = async (productId, newQuantity) => {
     try {
+      console.log('Updating quantity:', productId, newQuantity) // Debug log
       await apiService.request(API.cart.updateCart(userId), {
         method: 'PUT',
         body: JSON.stringify({ productId, quantity: newQuantity })
       })
       fetchCart() // Refresh cart after updating quantity
     } catch (err) {
+      console.error('Update quantity error:', err) // Debug log
       Alert.alert("Error", "Failed to update quantity")
     }
   }
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const total = cart.reduce((sum, item) => {
+    const product = item.product || item
+    const productPrice = product.price
+    const itemTotal = productPrice * item.quantity
+    return sum + itemTotal
+  }, 0)
 
   const windowWidth = Dimensions.get("window").width
   const cartWidth = isWeb ? (windowWidth > 768 ? 420 : windowWidth * 0.8) : windowWidth
@@ -102,6 +121,9 @@ const Cart = ({ closeCart, isWeb }) => {
       <View style={[styles.overlay, isWeb && styles.webOverlay]}>
         <View style={[styles.cartContainer, { width: cartWidth }]}>
           <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity style={styles.continueButton} onPress={closeCart}>
+            <Text style={styles.continueButtonText}>Close</Text>
+          </TouchableOpacity>
         </View>
       </View>
     )
@@ -132,45 +154,53 @@ const Cart = ({ closeCart, isWeb }) => {
         ) : (
           <>
             <ScrollView style={styles.itemsContainer}>
-              {cart.map((item) => (
-                <View key={item.id} style={styles.cartItem}>
-                  <Image source={{ uri: item.image || "https://placehold.co/100x100" }} style={styles.itemImage} />
-                  <View style={styles.itemInfo}>
-                    <Text style={styles.itemName} numberOfLines={2}>
-                      {item.name}
-                    </Text>
-                    <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
-                    <View style={styles.quantityControl}>
-                      <TouchableOpacity 
-                        style={styles.quantityButton} 
-                        onPress={() => handleQuantityChange(item.id, Math.max(1, item.quantity - 1))}
-                      >
-                        <Icon name="minus" size={10} color="#a8336e" />
-                      </TouchableOpacity>
-                      <Text style={styles.quantity}>{item.quantity}</Text>
-                      <TouchableOpacity 
-                        style={styles.quantityButton} 
-                        onPress={() => handleQuantityChange(item.id, item.quantity + 1)}
-                      >
-                        <Icon name="plus" size={10} color="#a8336e" />
-                      </TouchableOpacity>
+              {cart.map((item) => {
+                const product = item.product || item
+                const productId = product._id || product.id
+                const productName = product.name
+                const productPrice = product.price
+                const productImage = product.image
+                
+                return (
+                  <View key={productId} style={styles.cartItem}>
+                    <Image source={{ uri: productImage || "https://placehold.co/100x100" }} style={styles.itemImage} />
+                    <View style={styles.itemInfo}>
+                      <Text style={styles.itemName} numberOfLines={2}>
+                        {productName}
+                      </Text>
+                      <Text style={styles.itemPrice}>₹{productPrice?.toFixed(2)}</Text>
+                      <View style={styles.quantityControl}>
+                        <TouchableOpacity 
+                          style={styles.quantityButton} 
+                          onPress={() => handleQuantityChange(productId, Math.max(1, item.quantity - 1))}
+                        >
+                          <Icon name="minus" size={10} color="#a8336e" />
+                        </TouchableOpacity>
+                        <Text style={styles.quantity}>{item.quantity}</Text>
+                        <TouchableOpacity 
+                          style={styles.quantityButton} 
+                          onPress={() => handleQuantityChange(productId, item.quantity + 1)}
+                        >
+                          <Icon name="plus" size={10} color="#a8336e" />
+                        </TouchableOpacity>
+                      </View>
                     </View>
+                    <Text style={styles.itemTotal}>₹{(productPrice * item.quantity).toFixed(2)}</Text>
+                    <TouchableOpacity 
+                      style={styles.removeButton}
+                      onPress={() => handleRemoveFromCart(productId)}
+                    >
+                      <Icon name="trash" size={14} color="#e84a80" />
+                    </TouchableOpacity>
                   </View>
-                  <Text style={styles.itemTotal}>${(item.price * item.quantity).toFixed(2)}</Text>
-                  <TouchableOpacity 
-                    style={styles.removeButton}
-                    onPress={() => handleRemoveFromCart(item.id)}
-                  >
-                    <Icon name="trash" size={14} color="#e84a80" />
-                  </TouchableOpacity>
-                </View>
-              ))}
+                )
+              })}
             </ScrollView>
 
             <View style={styles.cartFooter}>
               <View style={styles.totalContainer}>
                 <Text style={styles.totalLabel}>Subtotal:</Text>
-                <Text style={styles.totalAmount}>${total.toFixed(2)}</Text>
+                <Text style={styles.totalAmount}>₹{total.toFixed(2)}</Text>
               </View>
               <Text style={styles.taxNote}>Taxes and shipping calculated at checkout</Text>
               <TouchableOpacity style={styles.checkoutButton}>
