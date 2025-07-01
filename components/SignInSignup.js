@@ -30,7 +30,7 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
   const register = async () => {
     try {
       setLoading(true);
-      const apiUrl = registerAs ? API.auth.register : API.auth.registerAdmin;
+      const apiUrl = registerAsAdmin ? API.auth.registerAdmin : API.auth.register;
       const response = await apiService.request(apiUrl, {
         method: "POST",
         body: JSON.stringify({

@@ -22,11 +22,12 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState("")
   const [windowWidth, setWindowWidth] = useState(Dimensions.get("window").width)
   const [isWeb, setIsWeb] = useState(Platform.OS === "web")
-
-  const user =
-  typeof window !== "undefined" && localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : null;
+  const [user, setUser] = useState(() => {
+    if (typeof window !== "undefined" && localStorage.getItem("user")) {
+      return JSON.parse(localStorage.getItem("user"));
+    }
+    return null;
+  });
   const isAdmin = user && user.role === "admin";
 
   // Create predefined women's categories
@@ -87,8 +88,11 @@ export default function App() {
         <SignInSignup 
           onClose={() => setShowSignIn(false)}
           onAuthenticated={() => {
-            setIsAuthenticated(true)
-            setShowSignIn(false)
+            // Always get the latest user from localStorage
+            const newUser = JSON.parse(localStorage.getItem("user"));
+            setUser(newUser);
+            setIsAuthenticated(true);
+            setShowSignIn(false);
           }}
         />
       ) : isAdmin ? (
