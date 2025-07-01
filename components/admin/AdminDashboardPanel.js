@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, TextInput, Button, StyleSheet, FlatList, ScrollView, Alert} from 'react-native';
+import {apiService, API} from '../../api/endpoints';
 
 export default function AdminDashboardPanel() {
     const [product, setProduct] = useState({
@@ -17,8 +18,85 @@ export default function AdminDashboardPanel() {
     const [totalSales, setTotalSales] = useState(0);
     const [ordersCount, setOrdersCount] = useState(0);
 
+    // Fetch products, orders, stats
+    useEffect(() => {
+        fetchProducts();
+        fetchOrders();
+        fetchStats();
+    }, []);
 
-    // we define a function to fetch the products from the database
+    const fetchProducts = async () => {
+        try {
+            const res = await apiService.request(API.products.getAll);
+            setProducts(res);
+        } catch (err) {
+            Alert.alert('Error', 'Failed to fetch products');
+        }
+    };
+
+    const fetchOrders = async () => {
+        try {
+            const res = await apiService.request(API.orders.getAll);
+            setOrders(res);
+        } catch (err) {
+            Alert.alert('Error', 'Failed to fetch orders');
+        }
+    };
+
+    const fetchStats = async () => {
+        try {
+            const sales = await apiService.request(API.orders.getTotalSales);
+            setTotalSales(sales.totalSales || 0);
+            const count = await apiService.request(API.orders.getOrderCount);
+            setOrdersCount(count.orderCount || 0);
+        } catch (err) {
+            Alert.alert('Error', 'Failed to fetch stats');
+        }
+    };
+
+    const handleAddProduct = async () => {
+        try {
+            await apiService.request(API.products.add, {
+                method: 'POST',
+                body: JSON.stringify(product),
+            });
+            Alert.alert('Success', 'Product added!');
+            setProduct({
+                name: '',
+                description: '',
+                price: '',
+                category: '',
+                countInStock: '',
+                brand: '',
+            });
+            fetchProducts();
+        } catch (err) {
+            Alert.alert('Error', 'Failed to add product');
+        }
+    };
+
+    const handleDeleteProduct = async (id) => {
+        try {
+            await apiService.request(API.products.delete(id), {method: 'DELETE'});
+            Alert.alert('Deleted', 'Product deleted');
+            fetchProducts();
+        } catch (err) {
+            Alert.alert('Error', 'Failed to delete product');
+        }
+    };
+
+    const handleUpdateOrderStatus = async (id, status) => {
+        try {
+            await apiService.request(API.orders.updateStatus(id), {
+                method: 'PUT',
+                body: JSON.stringify({status}),
+            });
+            Alert.alert('Success', 'Order status updated');
+            fetchOrders();
+        } catch (err) {
+            Alert.alert('Error', 'Failed to update order');
+        }
+    };
 
     return (
         <ScrollView style={styles.container}>
@@ -43,7 +121,7 @@ export default function AdminDashboardPanel() {
                 data={products}
                 keyExtractor={(item) => item._id}
                 renderItem={({item}) => (
-                    <View style={style.caed}>
+                    <View style={styles.card}>
                         <Text>{item.name}</Text>
                         <Text>${item.price}</Text>
                         <Button title="Delete" onPress={() => handleDeleteProduct(item._id)} />

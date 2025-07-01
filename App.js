@@ -12,6 +12,9 @@ import { products } from "./data/product"
 import CategoryFilter from "./components/CategoryFilter"
 import AdminDashboardPanel from "./components/admin/AdminDashboardPanel";
 
+if (typeof window !== "undefined") {
+  localStorage.clear();
+}
 
 export default function App() {
   const [showCart, setShowCart] = useState(false)
