@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { apiService } from "../api/endpoints";
+import { apiService, API } from "../api/endpoints";
 
 const SignInSignup = ({ onClose, onAuthenticated }) => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [registerAsAdmin, setRegisterAsAdmin] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,10 +30,14 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
   const register = async () => {
     try {
       setLoading(true);
-      const response = await apiService.register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password
+      const apiUrl = registerAs ? API.auth.register : API.auth.registerAdmin;
+      const response = await apiService.request(apiUrl, {
+        method: "POST",
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
       });
       
       // Store the token and user data
@@ -85,6 +90,7 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
 
   const toggleForm = () => {
     setIsSignUp((prev) => !prev);
+    setRegisterAsAdmin(false);
     setFormData({
       name: "",
       email: "",
@@ -134,6 +140,31 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
             value={formData.password}
             onChangeText={(value) => handleInputChange('password', value)}
           />
+
+          {isSignUp && (
+            <View style={styles.registerButtons}>
+              <TouchableOpacity
+                style={[
+                  styles.registerButton,
+                  !registerAsAdmin ? styles.adminBg : styles.userBg,
+                  !registerAsAdmin && styles.buttonSelected,
+                ]}
+                onPress={() => setRegisterAsAdmin(false)}
+              >
+                <Text style={styles.registerButtonText}>User</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.registerButton,
+                  registerAsAdmin ? styles.adminBg : styles.userBg,
+                  registerAsAdmin && styles.buttonSelected,
+                ]}
+                onPress={() => setRegisterAsAdmin(true)}
+              >
+                <Text style={styles.registerButtonText}>Admin</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           <TouchableOpacity 
             style={[styles.button, loading && styles.buttonDisabled]} 
@@ -236,7 +267,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "bold",
   },
   toggleContainer: {
@@ -250,6 +281,35 @@ const styles = StyleSheet.create({
   toggleLink: {
     color: "#a8336e",
     fontWeight: "bold",
+  },
+  registerButtons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 18,
+    gap: 16,
+  },
+  registerButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginHorizontal: 6,
+  },
+  registerButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  adminBg: {
+    backgroundColor: "#a8336e",
+  },
+  userBg: {
+    backgroundColor: "#4a7de8",
+  },
+  buttonSelected: {
+    borderWidth: 2,
+    borderColor: "#333",
   },
 });
 
