@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { apiService, API } from "../api/endpoints";
 
 const SignInSignup = ({ onClose, onAuthenticated }) => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -30,25 +29,6 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
   const register = async () => {
     try {
       setLoading(true);
-      const apiUrl = registerAsAdmin ? API.auth.registerAdmin : API.auth.register;
-      const response = await apiService.request(apiUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-      
-      // Store the token and user data
-      if (response.token) {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
-        triggerStorageEvent(); // Trigger storage event
-      }
-      
-      Alert.alert("Success", "Account created successfully!");
-      onAuthenticated();
     } catch (error) {
       Alert.alert("Error", error.message || "Failed to create account");
     } finally {
@@ -59,20 +39,6 @@ const SignInSignup = ({ onClose, onAuthenticated }) => {
   const login = async () => {
     try {
       setLoading(true);
-      const response = await apiService.login({
-        email: formData.email,
-        password: formData.password
-      });
-      
-      // Store the token and user data
-      if (response.token) {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
-        triggerStorageEvent(); // Trigger storage event
-      }
-      
-      Alert.alert("Success", "Logged in successfully!");
-      onAuthenticated();
     } catch (error) {
       Alert.alert("Error", error.message || "Failed to login");
     } finally {

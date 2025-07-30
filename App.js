@@ -12,6 +12,7 @@ import { products } from "./data/product"
 import CategoryFilter from "./components/CategoryFilter"
 import AdminDashboardPanel from "./components/admin/AdminDashboardPanel";
 
+//if not any login then browser show eshop page
 if (typeof window !== "undefined") {
   localStorage.clear();
 }
@@ -31,7 +32,7 @@ export default function App() {
     }
     return null;
   });
-  const isAdmin = user && user.role === "admin";
+  const isAdmin = user && user.role === "admin";  // for admin login
 
   // Create predefined women's categories
   const womenCategories = [

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Dimensions, Platform, Alert } from "react-native"
 import Icon from "react-native-vector-icons/FontAwesome"
-import { API, apiService } from "../api/endpoints"
 
 const Cart = ({ closeCart, isWeb }) => {
   const [cart, setCart] = useState([])
@@ -13,7 +12,7 @@ const Cart = ({ closeCart, isWeb }) => {
 
   useEffect(() => {
     if (userId) {
-      fetchCart()
+      // fetchCart()
     } else {
       setLoading(false)
       setError("Please login to view your cart")
@@ -21,79 +20,23 @@ const Cart = ({ closeCart, isWeb }) => {
   }, [userId])
 
   const fetchCart = async () => {
-    try {
-      setLoading(true)
-      const response = await apiService.request(API.cart.getCart(userId))
-      console.log('Cart response:', response) // Debug log
-      setCart(response.cartItems || [])
-      setError(null)
-    } catch (err) {
-      console.error('Fetch cart error:', err) // Debug log
-      setError(err.message)
-      Alert.alert("Error", "Failed to fetch cart items")
-    } finally {
-      setLoading(false)
-    }
+    
   }
 
   const handleAddToCart = async (product) => {
-    try {
-      console.log('Adding to cart:', product) // Debug log
-      await apiService.request(API.cart.addToCart, {
-        method: 'POST',
-        body: JSON.stringify({
-          userId,
-          productId: product.id,
-          quantity: 1
-        })
-      })
-      fetchCart() // Refresh cart after adding
-    } catch (err) {
-      console.error('Add to cart error:', err) // Debug log
-      Alert.alert("Error", "Failed to add item to cart")
-    }
+    
   }
 
   const handleRemoveFromCart = async (productId) => {
-    try {
-      console.log('Removing from cart:', productId) // Debug log
-      await apiService.request(API.cart.removeFromCart(userId), {
-        method: 'DELETE',
-        body: JSON.stringify({ productId })
-      })
-      fetchCart() // Refresh cart after removing
-    } catch (err) {
-      console.error('Remove from cart error:', err) // Debug log
-      Alert.alert("Error", "Failed to remove item from cart")
-    }
+   
   }
 
   const handleClearCart = async () => {
-    try {
-      console.log('Clearing cart') // Debug log
-      await apiService.request(API.cart.clearCart(userId), {
-        method: 'DELETE'
-      })
-      setCart([])
-      Alert.alert("Success", "Cart cleared successfully!")
-    } catch (err) {
-      console.error('Clear cart error:', err) // Debug log
-      Alert.alert("Error", "Failed to clear cart")
-    }
+
   }
 
   const handleQuantityChange = async (productId, newQuantity) => {
-    try {
-      console.log('Updating quantity:', productId, newQuantity) // Debug log
-      await apiService.request(API.cart.updateCart(userId), {
-        method: 'PUT',
-        body: JSON.stringify({ productId, quantity: newQuantity })
-      })
-      fetchCart() // Refresh cart after updating quantity
-    } catch (err) {
-      console.error('Update quantity error:', err) // Debug log
-      Alert.alert("Error", "Failed to update quantity")
-    }
+
   }
 
   const total = cart.reduce((sum, item) => {
